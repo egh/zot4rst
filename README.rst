@@ -1,16 +1,14 @@
-=========================================
- Zotero for plain text: ``zotero-plain``
-=========================================
+=================================================
+ zot4rst: Zotero for reStructuredText (docutils)
+=================================================
 
 Background
 ----------
 
 Zotero_ is a useful tool for managing citations.
 
-``zotero-plain`` consists of two parts: an extension to the Python
-docutils_ package for including citations in reStructuredText_
-documents (zotero2rst), and elisp code for accessing Zotero from
-emacs_.
+``zot4rst`` is an extension to the Python docutils_ package for
+including citations in reStructuredText_ documents.
 
 zot4rst
 -------
@@ -20,7 +18,7 @@ Installation
 
 1. Install Zotero_.
 2. Install docutils from a `docutils snapshot`_ release.
-3. Install zot4rst (from the ``python`` directory::
+3. Install zot4rst::
 
      sudo python setup.py install
 
@@ -54,7 +52,7 @@ After you have your userid and key, run::
 where ``USERID`` is your *numeric* userid, ``KEY`` is your API key,
 and ``KEYMAPFILE`` is the file you want to use to hold a mapping from
 human keys to Zotero keys. The script will prompt you for a collection
-to use; select one. The files should then be generated.
+to use; select one. The file should then be generated.
 
 You can then edit the file, choosing keys that are more to your
 liking.
@@ -68,7 +66,7 @@ key is stored in the file, so if it is a write key, you will not want
 to distribute this key file.
 
 Updating the keymap should *not* change any keys you have modified by
-hand, but a backup is always made then ``zupdatekeymap`` is run.
+hand, but a backup is always made when ``zupdatekeymap`` is run.
 
 To include Zotero_ citations in a reStructuredText_ document, you must
 use the bundled ``zrst2*`` scripts, which have been modified to
@@ -92,7 +90,7 @@ To use this feature, run::
 
   zupdatekeymap KEYMAPFILE JSONFILE
 
-For example:
+For example::
 
   zupdatekeymap example.keys example.json
 
@@ -142,39 +140,7 @@ explicitly. For example::
 
   .. [#] These people are wrong.
 
-Emacs integration
------------------
-
-Emacs integration has 2 parts: a core library (``zotero.el``),
-`org-mode`_ integration (``org-zotero.el``). Emacs integration depends
-on the ``moz.el`` file from the mozrepl_ project, which can be
-retrieved at
-https://github.com/bard/mozrepl/blob/master/chrome/content/moz.el.
-
-To install, add the following to your ``.emacs`` file::
-
-  (add-to-list 'load-path "/path/to/moz.el")
-  (add-to-list 'load-path "/path/to/zotero-plain/elisp/")
-  (autoload 'org-zotero-mode "org-zotero" "" t)
-
-zotero + org-mode
-~~~~~~~~~~~~~~~~~
-
-To insert a citation into a `org-mode`_ document, first enable the
-``org-zotero`` minor mode::
-
-  M-x org-zotero-mode
-
-Then select one or more items ina Zotero_ pane. Finally, in emacs_,
-use: ``C-c z i`` to insert these items as citations. This inserts a
-zotero link with descriptive link text.
-
-To update the link text to reflect changed metadata from Zotero_, use
-``C-c z u`` over the link.
-
 .. _Zotero: http://www.zotero.org/
-.. _mozrepl: https://github.com/bard/mozrepl/wiki
-.. _emacs: http://www.gnu.org/software/emacs/
 .. _`org-mode`: http://orgmode.org/
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
 .. _docutils: http://docutils.sourceforge.net/
