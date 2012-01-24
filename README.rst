@@ -121,10 +121,11 @@ reStructuredText files without the Zotero extension. For example::
 
 will become::
 
-  A citation group (see Doe 2005, p. 34–35; also Doe and Roe 2007, chap. 3).
+  A citation group (see Doe 2005, p. 34–35; also Doe and Roe 2007,
+  chap. 3).
 
 and the bibliography will be fully expanded. This can be used to
-create RST files that will work without zot4st.
+create RST files that will work without zot4rst.
 
 If you use a footnote citation format, zot4rst will insert footnotes
 for you.
