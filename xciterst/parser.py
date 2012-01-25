@@ -1,7 +1,7 @@
 import re
 import sys
 from pyparsing import Group, OneOrMore, Optional, Regex, White, Word, ZeroOrMore
-from xciterst import CitationInfo
+from xciterst import CitationInfo, CitationCluster
 
 class CiteParser(object):
     class Base():
@@ -52,7 +52,7 @@ class CiteParser(object):
             CiteParser.Base.__init__(self, "ShortCiteExtra", toks.asList())
 
     def _results2cites(self, pieces, cites=None, current_cite=None):
-        if cites is None: cites = [None, []]
+        if cites is None: cites = [None, CitationCluster([])]
         prefix = None
         for piece in pieces:
             if isinstance(piece, CiteParser.ShortCite):
@@ -61,13 +61,13 @@ class CiteParser(object):
                                      author_only=True)
                 current_cite = CitationInfo(key=piece.key,
                                             suppress_author=True)
-                cites[0] = [first]
-                cites[1].append(current_cite)
+                cites[0] = CitationCluster([first])
+                cites[1].citations.append(current_cite)
             elif isinstance(piece, CiteParser.CiteKey):
                 current_cite = CitationInfo(key=piece.key,
                                             suppress_author=piece.suppress_author,
                                             prefix=prefix)
-                cites[1].append(current_cite)
+                cites[1].citations.append(current_cite)
             elif isinstance(piece, CiteParser.Prefix):
                 prefix = piece.content
             elif isinstance(piece, CiteParser.Locator):

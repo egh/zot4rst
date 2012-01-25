@@ -50,7 +50,6 @@ class ZoteroConnection(object):
         self.registered_items = []
         self.key2id = {}
         self.local_items = {}
-        self.note_indexes = []
         self.citations = None
 
     def set_format(self, format):
@@ -80,13 +79,12 @@ class ZoteroConnection(object):
 
     def track_cluster(self, cluster):
         self.tracked_clusters.append(cluster)
-        self.note_indexes.append(None)
 
     def register_items(self):
         def flatten(listoflists):
             return itertools.chain.from_iterable(listoflists)
 
-        uniq_keys = set([ item.key for item in flatten(self.tracked_clusters) ])
+        uniq_keys = set([ item.key for item in flatten([ c.citations for c in self.tracked_clusters ]) ])
         uniq_ids = set(self.get_item_id_batch(list(uniq_keys)))
         if (uniq_ids != self.registered_items):
             self.methods.updateItems(list(uniq_ids))
@@ -128,9 +126,9 @@ class ZoteroConnection(object):
             citations = []
             for cluster in self.tracked_clusters: 
                 index = self.get_index(cluster)
-                citations.append({ 'citationItems' : cluster,
+                citations.append({ 'citationItems' : cluster.citations,
                                    'properties'    : { 'index'    : index,
-                                                       'noteIndex': self.note_indexes[index] + 1} })
+                                                       'noteIndex': cluster.note_index } })
             for cit in citations:
                 for c in cit['citationItems']:
                     c.id = self.get_item_id(c.key)
@@ -253,17 +251,13 @@ class ZoteroFootnoteSort(docutils.transforms.Transform):
         # Reset note numbers
         zotero_conn.citations = None
         zotero_conn.tracked_clusters = []
-        zotero_conn.note_indexes = []
         for i in range(0, len(self.document.autofootnotes), 1):
             footnote = self.document.autofootnotes[i]
             content = footnote.children[1].children[0]
             if isinstance(footnote.children[1].children[0], docutils.nodes.pending):
             	cluster = content.details['cite_cluster']
 		zotero_conn.tracked_clusters.append(cluster)
-	        zotero_conn.note_indexes.append(i)
-	    else:
-		zotero_conn.tracked_clusters.append([])
-	        zotero_conn.note_indexes.append(i)
+                cluster.note_index = i
 
         empty = docutils.nodes.generated()
         self.startnode.replace_self(empty)
@@ -302,10 +296,8 @@ class ZoteroCitationSecondTransform(docutils.transforms.Transform):
     def apply(self):
         cite_cluster = self.startnode.details['cite_cluster']
         footnote_node = self.startnode.parent.parent
-        note_index = 0
         if type(footnote_node) == docutils.nodes.footnote:
-            note_index = int(str(footnote_node.children[0].children[0]))
-        zotero_conn.note_indexes[zotero_conn.get_index(cite_cluster)] = note_index
+            cite_cluster.note_index = int(str(footnote_node.children[0].children[0]))
         cite_cluster = self.startnode.details['cite_cluster']
         newnode = zotero_conn.get_citation(cite_cluster)
         self.startnode.replace_self(newnode)
@@ -340,7 +332,7 @@ def handle_cite_cluster(inliner, cite_cluster):
 
     parent = inliner.parent
     document = inliner.document
-    for cite in cite_cluster:
+    for cite in cite_cluster.citations:
         cite.key = zotero_conn.lookup_key(cite.key)
     zotero_conn.track_cluster(cite_cluster)
     if zotero_conn.in_text_style or \
