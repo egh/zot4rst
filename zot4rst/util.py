@@ -59,25 +59,37 @@ def html2rst (html):
         """
         if html_node is None:
             return None
-        elif ((type(html_node) == BeautifulSoup.NavigableString) or (type(html_node) == str) or (type(html_node) == unicode)):
+        elif ((type(html_node) == BeautifulSoup.NavigableString) or (type(html_node) == str) or (type(html_node) == unicode)
+):
+            # Terminal nodes
             text = cleanString(unicode(html_node))
             # whitespace is significant in reST, so normalize empties to a single space
             if re.match("^\s+$", text):
                 return nodes.Text(" ", rawsource=" ")
             else:
-                return nodes.Text(text, rawsource=text)
+                return nodes.Text(unicode(text), rawsource=unicode(text))
         else:
+            # Nesting nodes.
             if (html_node.name == 'span'):
+                ret = None
                 if (html_node.has_key('style') and (html_node['style'] == "font-style:italic;")):
-                    return nodes.emphasis(text="".join([ unicode(walk(c)) for c in html_node.contents ]))
+                    children = compact([walk(c) for c in html_node.contents])
+                    return nodes.emphasis("", "", *children)
                 elif (html_node.has_key('style') and (html_node['style'] == "font-variant:small-caps;")):
-                    return zot4rst.smallcaps(text="".join([ unicode(walk(c)) for c in html_node.contents ]))
+                    children = compact([walk(c) for c in html_node.contents])
+                    return zot4rst.smallcaps("", "", *children)
+                elif (html_node.has_key('style') and (html_node['style'] == "font-style:normal;")):
+                    children = compact([walk(c) for c in html_node.contents])
+                    return nodes.emphasis("", "", *children)
                 else:
-                    return compact(walk("".join([ str(c) for c in html_node.contents ])))
+                    children = compact(walk("".join([ str(c) for c in html_node.contents ])))
+                    return nodes.generated("", "", *children)
             if (html_node.name == 'i'):
-                return nodes.emphasis(text="".join([ unicode(walk(c)) for c in html_node.contents ]))
+                children = compact([walk(c) for c in html_node.contents])
+                return nodes.emphasis("", "", *children)
             elif (html_node.name == 'b'):
-                return nodes.strong(text="".join([ unicode(walk(c)) for c in html_node.contents ]))
+                children = compact([walk(c) for c in html_node.contents ])
+                return nodes.strong("", "", *children)
             elif (html_node.name == 'p'):
                 children = compact([ walk(c) for c in html_node.contents ])
                 return nodes.paragraph("", "", *children)
