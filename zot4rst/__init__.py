@@ -143,6 +143,7 @@ class ZoteroConnection(object):
                 citation_blocks_html = json.loads(raw)
                 self.citations.extend([ html2rst(unquote(block)) for block in citation_blocks_html ])
                 offset = offset + batchlen
+
     def get_citation(self, cluster):
         self.cache_citations()
         return self.citations[self.get_index(cluster)]
@@ -180,9 +181,12 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
             zotero_conn.load_keymap(self.options['keymap'])
         if self.options.has_key('biblio'):
             zotero_conn.load_biblio(self.options['biblio'])
-        pending = docutils.nodes.pending(ZoteroFootnoteSort)
-        self.state_machine.document.note_pending(pending)
-        return [pending]
+        if zotero_conn.in_text_style:
+            return []
+        else:
+            pending = docutils.nodes.pending(ZoteroFootnoteSort)
+            self.state_machine.document.note_pending(pending)
+            return [pending]
 
 class ZoteroFootnoteSort(docutils.transforms.Transform):
     default_priority = 641
