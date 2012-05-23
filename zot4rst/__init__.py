@@ -15,8 +15,9 @@ import sys
 import zot4rst.jsonencoder
 import xciterst
 
-from zot4rst.util import html2rst, unquote
+from zot4rst.util import unquote
 from xciterst.parser import CiteParser
+from xciterst.util import html2rst
 
 DEFAULT_CITATION_FORMAT = "http://www.zotero.org/styles/chicago-author-date"
 
