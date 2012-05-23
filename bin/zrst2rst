@@ -7,7 +7,7 @@
 import docutils.core,docutils.nodes,sys,re
 from urlparse import urlparse
 
-import zot4rst
+import xciterst
 
 marks="#=-_*^>%&|"
 lowerroman=['i','ii','iii','iv','v','vi','vii','viii','ix','x','xi']
@@ -535,7 +535,7 @@ def gen_rst(node, depth, in_line_block=False):
                         print node
                         sys.exit(1)
 
-        elif isinstance(node, zot4rst.smallcaps):
+        elif isinstance(node, xciterst.smallcaps):
                 node.rst=":smallcaps:`"+gather_rst(node,depth)+"`"+inlinemarkuptail(node)
 
         return node.rst

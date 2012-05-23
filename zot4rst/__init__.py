@@ -384,10 +384,7 @@ def zot_cite_role(role, rawtext, text, lineno, inliner,
     nodeset.append(handle_cite_cluster(inliner, second_cluster))
     return nodeset, []
 
-class smallcaps(docutils.nodes.Inline, docutils.nodes.TextElement): pass
-
 # setup zotero directives, roles
 docutils.parsers.rst.directives.register_directive('zotero-setup', ZoteroSetupDirective)
 docutils.parsers.rst.directives.register_directive('zotero-bibliography', ZoteroBibliographyDirective)
 docutils.parsers.rst.roles.register_canonical_role('xcite', zot_cite_role)
-docutils.parsers.rst.roles.register_local_role("smallcaps", smallcaps)

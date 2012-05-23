@@ -78,3 +78,6 @@ class CiteprocWrapper(object):
     # override in subclass
     def citeproc_update_items(self, ids):
         pass
+
+class smallcaps(docutils.nodes.Inline, docutils.nodes.TextElement): pass
+docutils.parsers.rst.roles.register_local_role("smallcaps", smallcaps)

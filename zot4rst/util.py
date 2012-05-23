@@ -2,7 +2,7 @@ import BeautifulSoup
 import jsbridge
 import re
 import urllib
-import zot4rst
+import xciterst
 
 from docutils import nodes
 
@@ -77,7 +77,7 @@ def html2rst (html):
                     return nodes.emphasis("", "", *children)
                 elif (html_node.has_key('style') and (html_node['style'] == "font-variant:small-caps;")):
                     children = compact([walk(c) for c in html_node.contents])
-                    return zot4rst.smallcaps("", "", *children)
+                    return xciterst.smallcaps("", "", *children)
                 elif (html_node.has_key('style') and (html_node['style'] == "font-style:normal;")):
                     children = compact([walk(c) for c in html_node.contents])
                     return nodes.emphasis("", "", *children)
