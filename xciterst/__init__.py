@@ -51,7 +51,8 @@ class CiteprocInstance(object):
 
     def __init__(self):
         self.tracked_clusters = []
-                
+        self.registered_items = set([])
+
     def track_cluster(self, cluster):
         self.tracked_clusters.append(cluster)
         
@@ -65,3 +66,15 @@ class CiteprocInstance(object):
         def flatten(listoflists):
             return itertools.chain.from_iterable(listoflists)
         return list(set([ item.key for item in flatten([ c.citations for c in self.tracked_clusters ]) ]))
+
+    def register_items(self):
+        """Register items in tracked clusters with the citeproc
+        instance."""
+        uniq_ids = self.get_unique_ids()
+        if (uniq_ids != self.registered_items):
+            self.citeproc_update_items(list(uniq_ids))
+            self.registered_items = uniq_ids
+
+    # override in subclass
+    def citeproc_update_items(self, ids):
+        pass

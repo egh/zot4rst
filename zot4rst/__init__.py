@@ -57,7 +57,6 @@ class ZoteroConnection(xciterst.CiteprocInstance):
         self.methods.instantiateCiteProc(format)
         self.in_text_style = self.methods.isInTextStyle()
 
-        self.registered_items = set([])
         self.key2id = {}
         self.local_items = {}
         self.citations = None
@@ -89,11 +88,8 @@ class ZoteroConnection(xciterst.CiteprocInstance):
     def get_unique_ids(self):
         return set(self.get_item_id_batch(self.get_unique_keys()))
         
-    def register_items(self):
-        uniq_ids = self.get_unique_ids()
-        if (uniq_ids != self.registered_items):
-            self.methods.updateItems(list(uniq_ids))
-            self.registered_items = uniq_ids
+    def citeproc_update_items(self, ids):
+        self.methods.updateItems(ids)
 
     def generate_rest_bibliography(self):
         """Generate a bibliography of reST nodes."""
