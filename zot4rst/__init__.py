@@ -92,25 +92,10 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
     def citeproc_update_items(self, ids):
         self.methods.updateItems(ids)
 
-    def generate_rest_bibliography(self):
-        """Generate a bibliography of reST nodes."""
-        self.register_items()
+    def citeproc_make_bibliography(self):
         data = self.methods.makeBibliography()
-        if not(data):
-            return html2rst("")
-        else:
-            # XXX There is some nasty business here.
-            #
-            # Some nested nodes come out serialized when run through html2rst, so something
-            # needs to be fixed there.
-            #
-            # More important, we need to figure out how to control formatting
-            # in the bib -- hanging indents especially. Probably the simplest thing
-            # is just to set some off-the-shelf named style blocks in style.odt, and
-            # apply them as more or less appropriate.
-            #
-            bibdata = unquote(json.loads(data))
-            return html2rst("%s%s%s"%(bibdata[0]["bibstart"], "".join(bibdata[1]), bibdata[0]["bibend"]))
+        if data is None: return None
+        else:            return unquote(json.loads(data))
 
     def cache_citations(self):
         if (self.citations is None):

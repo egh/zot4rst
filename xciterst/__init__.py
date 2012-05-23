@@ -1,6 +1,7 @@
 import docutils
 import itertools
 import re
+from xciterst.util import html2rst
 
 class CitationInfo(object):
     """Class to hold information about a citation for passing to
@@ -76,9 +77,23 @@ class CiteprocWrapper(object):
             self.citeproc_update_items(list(uniq_ids))
             self.registered_items = uniq_ids
 
+    def generate_rest_bibliography(self):
+        """Generate a bibliography of reST nodes."""
+        self.register_items()
+        bibdata = self.citeproc_make_bibliography()
+        if not(bibdata):
+            return html2rst("")
+        else:
+            return html2rst("%s%s%s"%(bibdata[0]["bibstart"], "".join(bibdata[1]), bibdata[0]["bibend"]))
+
     # override in subclass
     def citeproc_update_items(self, ids):
+        """Call updateItems in citeproc."""
         pass
 
+    def citeproc_make_bibliography(self):
+        """Call makeBibliography in citeproc."""
+        pass
+        
 class smallcaps(docutils.nodes.Inline, docutils.nodes.TextElement): pass
 docutils.parsers.rst.roles.register_local_role("smallcaps", smallcaps)
