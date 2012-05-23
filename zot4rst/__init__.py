@@ -48,7 +48,7 @@ class KeyMapper(object):
         else:
             return key
 
-class ZoteroConnection(xciterst.CiteprocInstance):
+class ZoteroConnection(xciterst.CiteprocWrapper):
     def __init__(self, format, **kwargs):
         # connect & setup
         self.back_channel, self.bridge = jsbridge.wait_and_create_network("127.0.0.1", 24242)

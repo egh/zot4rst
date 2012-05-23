@@ -46,7 +46,7 @@ class CitationCluster(object):
                 (self.note_index == other.note_index) and
                 (self.index == other.index))
 
-class CiteprocInstance(object):
+class CiteprocWrapper(object):
     """Class which represents a citeproc instance."""
 
     def __init__(self):
