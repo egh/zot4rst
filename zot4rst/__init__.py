@@ -33,6 +33,21 @@ def check_zotero_conn():
         sys.stderr.write("#####\n")
         raise docutils.utils.ExtensionOptionError("must set zotero-setup:: directive before zotero:: directive is used.")
 
+class KeyMapper(object):
+    def __init__(self, path=None):
+        # setup key mapping
+        self.keymap = ConfigParser.SafeConfigParser()
+        self.keymap.optionxform = str
+        if path is not None:
+            self.keymap.read(os.path.relpath(path))
+        
+    def __getitem__(self, key):
+        if self.keymap.has_option('keymap', key):
+            # return only the first part, the real key - rest is comment
+            return re.match("^([0-9A-Z_]+)", self.keymap.get('keymap', key)).group(1)
+        else:
+            return key
+
 class ZoteroConnection(object):
     def __init__(self, format, **kwargs):
         # connect & setup
@@ -41,10 +56,6 @@ class ZoteroConnection(object):
         self.methods = jsbridge.JSObject(self.bridge, "Components.utils.import('resource://citeproc/citeproc.js')")
         self.methods.instantiateCiteProc(format)
         self.in_text_style = self.methods.isInTextStyle()
-
-        # setup key mapping
-        self.keymap = ConfigParser.SafeConfigParser()
-        self.keymap.optionxform = str
 
         self.tracked_clusters = []
         self.registered_items = []
@@ -73,9 +84,6 @@ class ZoteroConnection(object):
             for n, new_id in enumerate(ids):
                 self.key2id[to_lookup[n]] = new_id
         return [ self.key2id[key] for key in keys ]
-
-    def load_keymap(self, path):
-        self.keymap.read(os.path.relpath(path))
 
     def track_cluster(self, cluster):
         self.tracked_clusters.append(cluster)
@@ -112,13 +120,6 @@ class ZoteroConnection(object):
             #
             bibdata = unquote(json.loads(data))
             return html2rst("%s%s%s"%(bibdata[0]["bibstart"], "".join(bibdata[1]), bibdata[0]["bibend"]))
-
-    def lookup_key(self, key):
-        if self.keymap.has_option('keymap', key):
-            # return only the first part, the real key - rest is comment
-            return re.match("^([0-9A-Z_]+)", self.keymap.get('keymap', key)).group(1)
-        else:
-            return key
 
     def cache_citations(self):
         if (self.citations is None):
@@ -178,7 +179,9 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
                    'biblio' : docutils.parsers.rst.directives.unchanged }
     def run(self):
         if self.options.has_key('keymap'):
-            zotero_conn.load_keymap(self.options['keymap'])
+            zotero_conn.keymap = KeyMapper(self.options['keymap'])
+        else:
+            zotero_conn.keymap = KeyMapper()
         if self.options.has_key('biblio'):
             zotero_conn.load_biblio(self.options['biblio'])
         if zotero_conn.in_text_style:
@@ -337,7 +340,7 @@ def handle_cite_cluster(inliner, cite_cluster):
     parent = inliner.parent
     document = inliner.document
     for cite in cite_cluster.citations:
-        cite.key = zotero_conn.lookup_key(cite.key)
+        cite.key = zotero_conn.keymap[cite.key]
     zotero_conn.track_cluster(cite_cluster)
     if zotero_conn.in_text_style or \
             (type(parent) == docutils.nodes.footnote):
