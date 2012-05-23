@@ -4,7 +4,6 @@
 # -*- coding: utf-8 -*-
 import docutils, docutils.parsers.rst, docutils.transforms, docutils.utils
 import ConfigParser
-import itertools
 import jsbridge
 import json
 import os
@@ -14,6 +13,7 @@ import socket
 import string
 import sys
 import zot4rst.jsonencoder
+import xciterst
 
 from zot4rst.util import html2rst, unquote
 from xciterst.parser import CiteParser
@@ -48,7 +48,7 @@ class KeyMapper(object):
         else:
             return key
 
-class ZoteroConnection(object):
+class ZoteroConnection(xciterst.CiteprocInstance):
     def __init__(self, format, **kwargs):
         # connect & setup
         self.back_channel, self.bridge = jsbridge.wait_and_create_network("127.0.0.1", 24242)
@@ -57,11 +57,12 @@ class ZoteroConnection(object):
         self.methods.instantiateCiteProc(format)
         self.in_text_style = self.methods.isInTextStyle()
 
-        self.tracked_clusters = []
-        self.registered_items = []
+        self.registered_items = set([])
         self.key2id = {}
         self.local_items = {}
         self.citations = None
+
+        super(ZoteroConnection, self).__init__()
 
     def set_format(self, format):
         self.methods.instantiateCiteProc(format)
@@ -85,21 +86,14 @@ class ZoteroConnection(object):
                 self.key2id[to_lookup[n]] = new_id
         return [ self.key2id[key] for key in keys ]
 
-    def track_cluster(self, cluster):
-        self.tracked_clusters.append(cluster)
-
+    def get_unique_ids(self):
+        return set(self.get_item_id_batch(self.get_unique_keys()))
+        
     def register_items(self):
-        def flatten(listoflists):
-            return itertools.chain.from_iterable(listoflists)
-
-        uniq_keys = set([ item.key for item in flatten([ c.citations for c in self.tracked_clusters ]) ])
-        uniq_ids = set(self.get_item_id_batch(list(uniq_keys)))
+        uniq_ids = self.get_unique_ids()
         if (uniq_ids != self.registered_items):
             self.methods.updateItems(list(uniq_ids))
             self.registered_items = uniq_ids
-
-    def get_index(self, cluster):
-        return self.tracked_clusters.index(cluster)
 
     def generate_rest_bibliography(self):
         """Generate a bibliography of reST nodes."""
@@ -125,8 +119,8 @@ class ZoteroConnection(object):
         if (self.citations is None):
             self.register_items()
             citations = []
-            for cluster in self.tracked_clusters: 
-                index = self.get_index(cluster)
+            for cluster in self.tracked_clusters:
+                index = self.get_cluster_index(cluster)
                 citations.append({ 'citationItems' : cluster.citations,
                                    'properties'    : { 'index'    : index,
                                                        'noteIndex': cluster.note_index } })
@@ -147,7 +141,7 @@ class ZoteroConnection(object):
 
     def get_citation(self, cluster):
         self.cache_citations()
-        return self.citations[self.get_index(cluster)]
+        return self.citations[self.get_cluster_index(cluster)]
 
     def prefix_items(self, items):
         prefixed = {}
@@ -257,13 +251,13 @@ class ZoteroFootnoteSort(docutils.transforms.Transform):
 
         # Reset note numbers
         zotero_conn.citations = None
-        zotero_conn.tracked_clusters = []
+        zotero_conn.reset_tracked_clusters()
         for i in range(0, len(self.document.autofootnotes), 1):
             footnote = self.document.autofootnotes[i]
             content = footnote.children[1].children[0]
             if isinstance(footnote.children[1].children[0], docutils.nodes.pending):
             	cluster = content.details['cite_cluster']
-		zotero_conn.tracked_clusters.append(cluster)
+		zotero_conn.track_cluster(cluster)
                 cluster.note_index = i
 
         empty = docutils.nodes.generated()

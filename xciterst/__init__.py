@@ -1,3 +1,4 @@
+import itertools
 import re
 
 class CitationInfo(object):
@@ -44,3 +45,23 @@ class CitationCluster(object):
         return ((self.citations == other.citations) and
                 (self.note_index == other.note_index) and
                 (self.index == other.index))
+
+class CiteprocInstance(object):
+    """Class which represents a citeproc instance."""
+
+    def __init__(self):
+        self.tracked_clusters = []
+                
+    def track_cluster(self, cluster):
+        self.tracked_clusters.append(cluster)
+        
+    def reset_tracked_clusters(self):
+        self.tracked_clusters = []
+
+    def get_cluster_index(self, cluster):
+        return self.tracked_clusters.index(cluster)
+
+    def get_unique_keys(self):
+        def flatten(listoflists):
+            return itertools.chain.from_iterable(listoflists)
+        return list(set([ item.key for item in flatten([ c.citations for c in self.tracked_clusters ]) ]))
