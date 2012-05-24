@@ -22,20 +22,43 @@ from xciterst.util import html2rst
 
 DEFAULT_CITATION_FORMAT = "http://www.zotero.org/styles/chicago-author-date"
 
-class CiteKeyMapper(object):
-    def __init__(self, path=None):
+class ZoteroCitekeyMapper(object):
+    """class used for mapping citekeys to IDs."""
+    
+    def __init__(self, conn, path=None):
+        self.conn = conn
         # setup key mapping
-        self.citekeymap = ConfigParser.SafeConfigParser()
-        self.citekeymap.optionxform = str
+        self.citekey2zotkey = ConfigParser.SafeConfigParser()
+        self.citekey2zotkey.optionxform = str
         if path is not None:
-            self.citekeymap.read(os.path.relpath(path))
+            self.citekey2zotkey.read(os.path.relpath(path))
+        self.zotkey2id = {}
         
     def __getitem__(self, citekey):
-        if self.citekeymap.has_option('keymap', citekey):
+        """Get a citation id from a citekey."""
+
+        # First, get zotero key from citekey
+        if self.citekey2zotkey.has_option('keymap', citekey):
             # return only the first part, the real key - rest is comment
-            return re.match("^([0-9A-Z_]+)", self.citekeymap.get('keymap', citekey)).group(1)
+            zotkey = re.match("^([0-9A-Z_]+)", self.citekey2zotkey.get('keymap', citekey)).group(1)
         else:
-            return citekey
+            zotkey = citekey
+        
+        return self.get_item_id_batch([zotkey])[0]
+
+    def get_item_id_batch(self, keys):
+        to_lookup = []
+        for key in keys:
+            if self.conn.local_items.has_key(key):
+                self.zotkey2id[key] = "MY-%s"%(key)
+            else:
+                if not(self.zotkey2id.has_key(key)):
+                    to_lookup.append(key)
+        if len(to_lookup) > 0:
+            ids = json.loads(self.conn.methods.getItemIdBatch(to_lookup))
+            for n, new_id in enumerate(ids):
+                self.zotkey2id[to_lookup[n]] = new_id
+        return [ self.zotkey2id[key] for key in keys ]
 
 class ZoteroConnection(xciterst.CiteprocWrapper):
     def __init__(self, format, **kwargs):
@@ -46,7 +69,6 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         self.methods.instantiateCiteProc(format)
         self.in_text_style = self.methods.isInTextStyle()
 
-        self.key2id = {}
         self.local_items = {}
         self.citations = None
 
@@ -55,28 +77,6 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
     def set_format(self, format):
         self.methods.instantiateCiteProc(format)
 
-    def get_item_id(self, key):
-        """Returns the id of an item with a given key. Key will be
-        looked up in the local keymap before the id is looked up."""
-        return self.get_item_id_batch([key])[0]
-
-    def get_item_id_batch(self, keys):
-        to_lookup = []
-        for key in keys:
-            if self.local_items.has_key(key):
-                self.key2id[key] = "MY-%s"%(key)
-            else:
-                if not(self.key2id.has_key(key)):
-                    to_lookup.append(key)
-        if len(to_lookup) > 0:
-            ids = json.loads(self.methods.getItemIdBatch(to_lookup))
-            for n, new_id in enumerate(ids):
-                self.key2id[to_lookup[n]] = new_id
-        return [ self.key2id[key] for key in keys ]
-
-    def get_unique_ids(self):
-        return set(self.get_item_id_batch(xciterst.cluster_tracker.get_unique_citekeys()))
-        
     def citeproc_update_items(self, ids):
         self.methods.updateItems(ids)
 
@@ -96,7 +96,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
                                                        'noteIndex': cluster.note_index } })
             for cit in citations:
                 for c in cit['citationItems']:
-                    c.id = self.get_item_id(c.citekey)
+                    c.id = xciterst.citekeymap[c.citekey]
             # Implement mini-batching. This is a hack to avoid what
             # appears to be a string size limitation of some sort in
             # jsbridge or code that it calls.
@@ -124,7 +124,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
     def load_biblio(self, path):
         self.local_items = json.load(open(path))
         self.methods.registerLocalItems(self.prefix_items(self.local_items));
-    
+
 class ZoteroSetupDirective(docutils.parsers.rst.Directive):
     def __init__(self, *args, **kwargs):
         docutils.parsers.rst.Directive.__init__(self, *args)
@@ -143,9 +143,9 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
                    'biblio' : docutils.parsers.rst.directives.unchanged }
     def run(self):
         if self.options.has_key('keymap'):
-            xciterst.citeproc.citekeymap = CiteKeyMapper(self.options['keymap'])
+            xciterst.citekeymap = ZoteroCitekeyMapper(xciterst.citeproc, self.options['keymap'])
         else:
-            xciterst.citeproc.citekeymap = CiteKeyMapper()
+            xciterst.citekeymap = ZoteroCitekeyMapper(xciterst.citeproc, None)
         if self.options.has_key('biblio'):
             xciterst.citeproc.load_biblio(self.options['biblio'])
         if xciterst.citeproc.in_text_style:

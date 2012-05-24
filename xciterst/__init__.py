@@ -4,9 +4,6 @@ from xciterst.util import html2rst
 import xciterst
 from xciterst.parser import CiteParser
 
-# placeholder for citeproc instance
-citeproc = None;
-
 def check_citeproc():
     if not xciterst.citeproc:
         ## A kludge, but makes a big noise about the extension syntax for clarity.
@@ -36,15 +33,15 @@ class ClusterTracker(object):
     def get_index(self, cluster):
         return self.clusters.index(cluster)
 
-    def get_unique_citekeys(self):
+    def get_unique_ids(self):
         def flatten(listoflists):
             return itertools.chain.from_iterable(listoflists)
-        return list(set([ item.citekey for item in flatten([ c.citations for c in self.clusters ]) ]))
+        return list(set([ item.id for item in flatten([ c.citations for c in self.clusters ]) ]))
 
     def register_items(self, citeproc):
         """Register items in tracked clusters with the citeproc
         instance."""
-        uniq_ids = citeproc.get_unique_ids()
+        uniq_ids = self.get_unique_ids()
         if (uniq_ids != self.registered_items):
             citeproc.citeproc_update_items(list(uniq_ids))
             self.registered_items = uniq_ids
@@ -74,6 +71,10 @@ class CiteprocWrapper(object):
     def citeproc_make_bibliography(self):
         """Call makeBibliography in citeproc."""
         pass
+
+# placeholder for citeproc instance
+citeproc = None
+citekeymap = None
 
 class smallcaps(docutils.nodes.Inline, docutils.nodes.TextElement): pass
 
