@@ -42,12 +42,12 @@ class CiteKeyMapper(object):
         if path is not None:
             self.citekeymap.read(os.path.relpath(path))
         
-    def __getitem__(self, key):
-        if self.citekeymap.has_option('keymap', key):
+    def __getitem__(self, citekey):
+        if self.citekeymap.has_option('keymap', citekey):
             # return only the first part, the real key - rest is comment
-            return re.match("^([0-9A-Z_]+)", self.citekeymap.get('keymap', key)).group(1)
+            return re.match("^([0-9A-Z_]+)", self.citekeymap.get('keymap', citekey)).group(1)
         else:
-            return key
+            return citekey
 
 class ZoteroConnection(xciterst.CiteprocWrapper):
     def __init__(self, format, **kwargs):
