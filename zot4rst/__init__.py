@@ -34,18 +34,18 @@ def check_zotero_conn():
         sys.stderr.write("#####\n")
         raise docutils.utils.ExtensionOptionError("must set zotero-setup:: directive before zotero:: directive is used.")
 
-class KeyMapper(object):
+class CiteKeyMapper(object):
     def __init__(self, path=None):
         # setup key mapping
-        self.keymap = ConfigParser.SafeConfigParser()
-        self.keymap.optionxform = str
+        self.citekeymap = ConfigParser.SafeConfigParser()
+        self.citekeymap.optionxform = str
         if path is not None:
-            self.keymap.read(os.path.relpath(path))
+            self.citekeymap.read(os.path.relpath(path))
         
     def __getitem__(self, key):
-        if self.keymap.has_option('keymap', key):
+        if self.citekeymap.has_option('keymap', key):
             # return only the first part, the real key - rest is comment
-            return re.match("^([0-9A-Z_]+)", self.keymap.get('keymap', key)).group(1)
+            return re.match("^([0-9A-Z_]+)", self.citekeymap.get('keymap', key)).group(1)
         else:
             return key
 
@@ -155,9 +155,9 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
                    'biblio' : docutils.parsers.rst.directives.unchanged }
     def run(self):
         if self.options.has_key('keymap'):
-            zotero_conn.keymap = KeyMapper(self.options['keymap'])
+            zotero_conn.citekeymap = CiteKeyMapper(self.options['keymap'])
         else:
-            zotero_conn.keymap = KeyMapper()
+            zotero_conn.citekeymap = CiteKeyMapper()
         if self.options.has_key('biblio'):
             zotero_conn.load_biblio(self.options['biblio'])
         if zotero_conn.in_text_style:
@@ -316,7 +316,7 @@ def handle_cite_cluster(inliner, cite_cluster):
     parent = inliner.parent
     document = inliner.document
     for cite in cite_cluster.citations:
-        cite.key = zotero_conn.keymap[cite.key]
+        cite.key = zotero_conn.citekeymap[cite.key]
     zotero_conn.track_cluster(cite_cluster)
     if zotero_conn.in_text_style or \
             (type(parent) == docutils.nodes.footnote):
