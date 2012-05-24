@@ -1,7 +1,7 @@
 import re
 import sys
 from pyparsing import Group, OneOrMore, Optional, Regex, White, Word, ZeroOrMore
-from xciterst import CitationInfo, CitationCluster
+from xciterst.citations import CitationInfo, CitationCluster
 
 class CiteParser(object):
     class Base():

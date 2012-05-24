@@ -1,5 +1,5 @@
 import jsbridge
-from xciterst import CitationInfo, CitationCluster
+from xciterst.citations import CitationInfo, CitationCluster
 
 class ZoteroJSONEncoder(jsbridge.network.JSObjectEncoder):
     """An encoder for our JSON objects."""
