@@ -21,19 +21,6 @@ from xciterst.util import html2rst
 
 DEFAULT_CITATION_FORMAT = "http://www.zotero.org/styles/chicago-author-date"
 
-# placeholder for global bridge to Zotero
-zotero_conn = None;
-
-def check_zotero_conn():
-    if not zot4rst.zotero_conn:
-        ## A kludge, but makes a big noise about the extension syntax for clarity.
-        sys.stderr.write("#####\n")
-        sys.stderr.write("##\n")
-        sys.stderr.write("##  Must set zotero-setup:: directive before zotero:: directive is used.\n")
-        sys.stderr.write("##\n")
-        sys.stderr.write("#####\n")
-        raise docutils.utils.ExtensionOptionError("must set zotero-setup:: directive before zotero:: directive is used.")
-
 class CiteKeyMapper(object):
     def __init__(self, path=None):
         # setup key mapping
@@ -143,10 +130,10 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
         docutils.parsers.rst.Directive.__init__(self, *args)
         # This is necessary: connection hangs if created outside of an instantiated
         # directive class.
-        if zot4rst.zotero_conn is None:
-            zot4rst.zotero_conn = ZoteroConnection(self.options.get('format', DEFAULT_CITATION_FORMAT))
+        if xciterst.citeproc is None:
+            xciterst.citeproc = ZoteroConnection(self.options.get('format', DEFAULT_CITATION_FORMAT))
         else:
-            zot4rst.zotero_conn.set_format(self.options.get('format', DEFAULT_CITATION_FORMAT))
+            xciterst.citeproc.set_format(self.options.get('format', DEFAULT_CITATION_FORMAT))
 
     required_arguments = 0
     optional_arguments = 0
@@ -156,12 +143,12 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
                    'biblio' : docutils.parsers.rst.directives.unchanged }
     def run(self):
         if self.options.has_key('keymap'):
-            zotero_conn.citekeymap = CiteKeyMapper(self.options['keymap'])
+            xciterst.citeproc.citekeymap = CiteKeyMapper(self.options['keymap'])
         else:
-            zotero_conn.citekeymap = CiteKeyMapper()
+            xciterst.citeproc.citekeymap = CiteKeyMapper()
         if self.options.has_key('biblio'):
-            zotero_conn.load_biblio(self.options['biblio'])
-        if zotero_conn.in_text_style:
+            xciterst.citeproc.load_biblio(self.options['biblio'])
+        if xciterst.citeproc.in_text_style:
             return []
         else:
             pending = docutils.nodes.pending(ZoteroFootnoteSort)
@@ -233,14 +220,14 @@ class ZoteroFootnoteSort(docutils.transforms.Transform):
             ref.replace(oldnum, newnum)
 
         # Reset note numbers
-        zotero_conn.citations = None
-        zotero_conn.cluster_tracker.reset()
+        xciterst.citeproc.citations = None
+        xciterst.citeproc.cluster_tracker.reset()
         for i in range(0, len(self.document.autofootnotes), 1):
             footnote = self.document.autofootnotes[i]
             content = footnote.children[1].children[0]
             if isinstance(footnote.children[1].children[0], docutils.nodes.pending):
             	cluster = content.details['cite_cluster']
-		zotero_conn.cluster_tracker.track(cluster)
+		xciterst.citeproc.cluster_tracker.track(cluster)
                 cluster.note_index = i
 
         empty = docutils.nodes.generated()
@@ -283,7 +270,7 @@ class ZoteroCitationSecondTransform(docutils.transforms.Transform):
         if type(footnote_node) == docutils.nodes.footnote:
             cite_cluster.note_index = int(str(footnote_node.children[0].children[0]))
         cite_cluster = self.startnode.details['cite_cluster']
-        newnode = zotero_conn.get_citation(cite_cluster)
+        newnode = xciterst.citeproc.get_citation(cite_cluster)
         self.startnode.replace_self(newnode)
 
 class ZoteroBibliographyDirective(docutils.parsers.rst.Directive):
@@ -308,8 +295,8 @@ class ZoteroBibliographyTransform(docutils.transforms.Transform):
     default_priority = 700
 
     def apply(self):
-        zotero_conn.cluster_tracker.register_items(zotero_conn)
-        self.startnode.replace_self(zotero_conn.generate_rest_bibliography())
+        xciterst.citeproc.cluster_tracker.register_items(xciterst.citeproc)
+        self.startnode.replace_self(xciterst.citeproc.generate_rest_bibliography())
 
 def handle_cite_cluster(inliner, cite_cluster):
     def random_label():
@@ -318,9 +305,9 @@ def handle_cite_cluster(inliner, cite_cluster):
     parent = inliner.parent
     document = inliner.document
     for cite in cite_cluster.citations:
-        cite.citekey = zotero_conn.citekeymap[cite.citekey]
-    zotero_conn.cluster_tracker.track(cite_cluster)
-    if zotero_conn.in_text_style or \
+        cite.citekey = xciterst.citeproc.citekeymap[cite.citekey]
+    xciterst.citeproc.cluster_tracker.track(cite_cluster)
+    if xciterst.citeproc.in_text_style or \
             (type(parent) == docutils.nodes.footnote):
         # already in a footnote, or in-text style: just add a pending
         pending = docutils.nodes.pending(ZoteroCitationTransform)
@@ -362,7 +349,7 @@ def handle_cite_cluster(inliner, cite_cluster):
 def zot_cite_role(role, rawtext, text, lineno, inliner,
                   options={}, content=[]):
     """Text role for citations."""
-    check_zotero_conn()
+    xciterst.check_citeproc()
 
     [first_cluster, second_cluster] = CiteParser().parse(text)
     nodeset = []

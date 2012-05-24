@@ -2,6 +2,20 @@ import docutils
 import itertools
 import re
 from xciterst.util import html2rst
+import xciterst
+
+# placeholder for citeproc instance
+citeproc = None;
+
+def check_citeproc():
+    if not xciterst.citeproc:
+        ## A kludge, but makes a big noise about the extension syntax for clarity.
+        sys.stderr.write("#####\n")
+        sys.stderr.write("##\n")
+        sys.stderr.write("##  Must setup a citeproc directive before xcite role is used.\n")
+        sys.stderr.write("##\n")
+        sys.stderr.write("#####\n")
+        raise docutils.utils.ExtensionOptionError("must set a citeproc directive before xcite role is used.")
 
 class CitationInfo(object):
     """Class to hold information about a citation for passing to
@@ -102,6 +116,6 @@ class CiteprocWrapper(object):
     def citeproc_make_bibliography(self):
         """Call makeBibliography in citeproc."""
         pass
-        
+
 class smallcaps(docutils.nodes.Inline, docutils.nodes.TextElement): pass
 docutils.parsers.rst.roles.register_local_role("smallcaps", smallcaps)
