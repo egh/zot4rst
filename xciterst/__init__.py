@@ -48,38 +48,46 @@ class CitationCluster(object):
                 (self.note_index == other.note_index) and
                 (self.index == other.index))
 
-class CiteprocWrapper(object):
-    """Class which represents a citeproc instance."""
+class ClusterTracker(object):
+    """Class used to track citation clusters."""
 
     def __init__(self):
-        self.tracked_clusters = []
+        self.clusters = []
         self.registered_items = set([])
 
-    def track_cluster(self, cluster):
-        self.tracked_clusters.append(cluster)
-        
-    def reset_tracked_clusters(self):
-        self.tracked_clusters = []
+    def get(self):
+        return self.clusters
 
-    def get_cluster_index(self, cluster):
-        return self.tracked_clusters.index(cluster)
+    def track(self, cluster):
+        self.clusters.append(cluster)
+        
+    def reset(self):
+        self.clusters = []
+
+    def get_index(self, cluster):
+        return self.clusters.index(cluster)
 
     def get_unique_citekeys(self):
         def flatten(listoflists):
             return itertools.chain.from_iterable(listoflists)
-        return list(set([ item.citekey for item in flatten([ c.citations for c in self.tracked_clusters ]) ]))
+        return list(set([ item.citekey for item in flatten([ c.citations for c in self.clusters ]) ]))
 
-    def register_items(self):
+    def register_items(self, citeproc):
         """Register items in tracked clusters with the citeproc
         instance."""
-        uniq_ids = self.get_unique_ids()
+        uniq_ids = citeproc.get_unique_ids()
         if (uniq_ids != self.registered_items):
-            self.citeproc_update_items(list(uniq_ids))
+            citeproc.citeproc_update_items(list(uniq_ids))
             self.registered_items = uniq_ids
+
+class CiteprocWrapper(object):
+    """Class which represents a citeproc instance."""
+
+    def __init__(self):
+        pass
 
     def generate_rest_bibliography(self):
         """Generate a bibliography of reST nodes."""
-        self.register_items()
         bibdata = self.citeproc_make_bibliography()
         if not(bibdata):
             return html2rst("")
