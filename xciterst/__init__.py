@@ -8,7 +8,7 @@ class CitationInfo(object):
     citeproc."""
 
     def __init__(self, **kwargs):
-        self.key = kwargs.get('key')
+        self.citekey = kwargs.get('citekey')
         self.label = kwargs.get('label', None)
         self.locator = kwargs.get('locator', None)
         self.suppress_author = kwargs.get('suppress_author', False)
@@ -22,10 +22,10 @@ class CitationInfo(object):
         self.id = None
     
     def __str__(self):
-        return "%s %s(%s) %s"%(self.prefix, self.key, self.locator, self.suffix)
+        return "%s %s(%s) %s"%(self.prefix, self.citekey, self.locator, self.suffix)
 
     def __eq__(self, other):
-        return ((self.key == other.key) and
+        return ((self.citekey == other.citekey) and
                 (self.label == other.label) and
                 (self.locator == other.locator) and
                 (self.suppress_author == other.suppress_author) and
@@ -64,10 +64,10 @@ class CiteprocWrapper(object):
     def get_cluster_index(self, cluster):
         return self.tracked_clusters.index(cluster)
 
-    def get_unique_keys(self):
+    def get_unique_citekeys(self):
         def flatten(listoflists):
             return itertools.chain.from_iterable(listoflists)
-        return list(set([ item.key for item in flatten([ c.citations for c in self.tracked_clusters ]) ]))
+        return list(set([ item.citekey for item in flatten([ c.citations for c in self.tracked_clusters ]) ]))
 
     def register_items(self):
         """Register items in tracked clusters with the citeproc

@@ -32,8 +32,8 @@ class CiteParser(object):
             self.suppress_author = False
             if len(toks) == 3:
                 self.suppress_author = True
-            self.key = toks[-1]
-            CiteParser.Base.__init__(self, "CiteKey", self.key)
+            self.citekey = toks[-1]
+            CiteParser.Base.__init__(self, "CiteKey", self.citekey)
 
     class FullCite(Base):
         def __init__(self, toks):
@@ -44,8 +44,8 @@ class CiteParser(object):
             self.suppress_author = False
             if len(toks) == 3:
                 self.suppress_author = True
-            self.key = toks[-1]
-            CiteParser.Base.__init__(self, "ShortCite", self.key)
+            self.citekey = toks[-1]
+            CiteParser.Base.__init__(self, "ShortCite", self.citekey)
 
     class ShortCiteExtra(Base):
         def __init__(self, toks):
@@ -57,14 +57,14 @@ class CiteParser(object):
         for piece in pieces:
             if isinstance(piece, CiteParser.ShortCite):
                 # actually 2 cites, first author-only, then suppress-author
-                first = CitationInfo(key=piece.key,
+                first = CitationInfo(citekey=piece.citekey,
                                      author_only=True)
-                current_cite = CitationInfo(key=piece.key,
+                current_cite = CitationInfo(citekey=piece.citekey,
                                             suppress_author=True)
                 cites[0] = CitationCluster([first])
                 cites[1].citations.append(current_cite)
             elif isinstance(piece, CiteParser.CiteKey):
-                current_cite = CitationInfo(key=piece.key,
+                current_cite = CitationInfo(citekey=piece.citekey,
                                             suppress_author=piece.suppress_author,
                                             prefix=prefix)
                 cites[1].citations.append(current_cite)

@@ -87,7 +87,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         return [ self.key2id[key] for key in keys ]
 
     def get_unique_ids(self):
-        return set(self.get_item_id_batch(self.get_unique_keys()))
+        return set(self.get_item_id_batch(self.get_unique_citekeys()))
         
     def citeproc_update_items(self, ids):
         self.methods.updateItems(ids)
@@ -108,7 +108,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
                                                        'noteIndex': cluster.note_index } })
             for cit in citations:
                 for c in cit['citationItems']:
-                    c.id = self.get_item_id(c.key)
+                    c.id = self.get_item_id(c.citekey)
             # Implement mini-batching. This is a hack to avoid what
             # appears to be a string size limitation of some sort in
             # jsbridge or code that it calls.
@@ -316,7 +316,7 @@ def handle_cite_cluster(inliner, cite_cluster):
     parent = inliner.parent
     document = inliner.document
     for cite in cite_cluster.citations:
-        cite.key = zotero_conn.citekeymap[cite.key]
+        cite.citekey = zotero_conn.citekeymap[cite.citekey]
     zotero_conn.track_cluster(cite_cluster)
     if zotero_conn.in_text_style or \
             (type(parent) == docutils.nodes.footnote):
