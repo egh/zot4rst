@@ -16,6 +16,7 @@ import zot4rst.jsonencoder
 import xciterst
 
 from zot4rst.util import unquote
+import xciterst.directives
 from xciterst.parser import CiteParser
 from xciterst.util import html2rst
 
@@ -272,31 +273,6 @@ class ZoteroCitationSecondTransform(docutils.transforms.Transform):
         newnode = xciterst.citeproc.get_citation(cite_cluster)
         self.startnode.replace_self(newnode)
 
-class ZoteroBibliographyDirective(docutils.parsers.rst.Directive):
-    """Directive for bibliographies."""
-    ## This could be extended to support selection of
-    ## included bibliography entries. The processor has
-    ## an API to support this, although it hasn't yet been
-    ## implemented in any products that I know of.
-    required_arguments = 0
-    optional_arguments = 1
-    has_content = False
-
-    def run(self):
-        pending = docutils.nodes.pending(ZoteroBibliographyTransform)
-        pending.details.update(self.options)
-        self.state_machine.document.note_pending(pending)
-        return [pending]
-
-class ZoteroBibliographyTransform(docutils.transforms.Transform):
-    """Transform which generates a bibliography. Wait for all items to
-    be registered, then we generate a bibliography."""
-    default_priority = 700
-
-    def apply(self):
-        xciterst.cluster_tracker.register_items(xciterst.citeproc)
-        self.startnode.replace_self(xciterst.citeproc.generate_rest_bibliography())
-
 def handle_cite_cluster(inliner, cite_cluster):
     def random_label():
         return "".join(random.choice(string.digits) for x in range(20))
@@ -360,5 +336,4 @@ def zot_cite_role(role, rawtext, text, lineno, inliner,
 
 # setup zotero directives, roles
 docutils.parsers.rst.directives.register_directive('zotero-setup', ZoteroSetupDirective)
-docutils.parsers.rst.directives.register_directive('zotero-bibliography', ZoteroBibliographyDirective)
 docutils.parsers.rst.roles.register_canonical_role('xcite', zot_cite_role)

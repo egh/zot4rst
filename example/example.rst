@@ -41,4 +41,4 @@ http://johnmacfarlane.net/pandoc/demo/CITATIONS
 
 References
 ==========
-.. zotero-bibliography::
+.. bibliography::
