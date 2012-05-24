@@ -48,7 +48,6 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         self.key2id = {}
         self.local_items = {}
         self.citations = None
-        self.cluster_tracker = xciterst.ClusterTracker()
 
         super(ZoteroConnection, self).__init__()
 
@@ -75,7 +74,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         return [ self.key2id[key] for key in keys ]
 
     def get_unique_ids(self):
-        return set(self.get_item_id_batch(self.cluster_tracker.get_unique_citekeys()))
+        return set(self.get_item_id_batch(xciterst.cluster_tracker.get_unique_citekeys()))
         
     def citeproc_update_items(self, ids):
         self.methods.updateItems(ids)
@@ -87,10 +86,10 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
 
     def cache_citations(self):
         if (self.citations is None):
-            self.cluster_tracker.register_items(self)
+            xciterst.cluster_tracker.register_items(self)
             citations = []
-            for cluster in self.cluster_tracker.get():
-                index = self.cluster_tracker.get_index(cluster)
+            for cluster in xciterst.cluster_tracker.get():
+                index = xciterst.cluster_tracker.get_index(cluster)
                 citations.append({ 'citationItems' : cluster.citations,
                                    'properties'    : { 'index'    : index,
                                                        'noteIndex': cluster.note_index } })
@@ -111,7 +110,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
 
     def get_citation(self, cluster):
         self.cache_citations()
-        return self.citations[self.cluster_tracker.get_index(cluster)]
+        return self.citations[xciterst.cluster_tracker.get_index(cluster)]
 
     def prefix_items(self, items):
         prefixed = {}
@@ -221,13 +220,13 @@ class ZoteroFootnoteSort(docutils.transforms.Transform):
 
         # Reset note numbers
         xciterst.citeproc.citations = None
-        xciterst.citeproc.cluster_tracker.reset()
+        xciterst.cluster_tracker.reset()
         for i in range(0, len(self.document.autofootnotes), 1):
             footnote = self.document.autofootnotes[i]
             content = footnote.children[1].children[0]
             if isinstance(footnote.children[1].children[0], docutils.nodes.pending):
             	cluster = content.details['cite_cluster']
-		xciterst.citeproc.cluster_tracker.track(cluster)
+		xciterst.cluster_tracker.track(cluster)
                 cluster.note_index = i
 
         empty = docutils.nodes.generated()
@@ -295,7 +294,7 @@ class ZoteroBibliographyTransform(docutils.transforms.Transform):
     default_priority = 700
 
     def apply(self):
-        xciterst.citeproc.cluster_tracker.register_items(xciterst.citeproc)
+        xciterst.cluster_tracker.register_items(xciterst.citeproc)
         self.startnode.replace_self(xciterst.citeproc.generate_rest_bibliography())
 
 def handle_cite_cluster(inliner, cite_cluster):
@@ -306,7 +305,7 @@ def handle_cite_cluster(inliner, cite_cluster):
     document = inliner.document
     for cite in cite_cluster.citations:
         cite.citekey = xciterst.citeproc.citekeymap[cite.citekey]
-    xciterst.citeproc.cluster_tracker.track(cite_cluster)
+    xciterst.cluster_tracker.track(cite_cluster)
     if xciterst.citeproc.in_text_style or \
             (type(parent) == docutils.nodes.footnote):
         # already in a footnote, or in-text style: just add a pending

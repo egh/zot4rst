@@ -49,6 +49,9 @@ class ClusterTracker(object):
             citeproc.citeproc_update_items(list(uniq_ids))
             self.registered_items = uniq_ids
 
+# tracker for clusters
+cluster_tracker = ClusterTracker()
+
 class CiteprocWrapper(object):
     """Class which represents a citeproc instance."""
 
