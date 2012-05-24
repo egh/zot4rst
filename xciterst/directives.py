@@ -104,4 +104,45 @@ class FootnoteSortTransform(docutils.transforms.Transform):
         empty = docutils.nodes.generated()
         self.startnode.replace_self(empty)
 
+
+class CitationTransform(docutils.transforms.Transform):
+    #
+    # Before Footnote
+    #
+    default_priority = 538
+    # Bridge hangs if output contains above-ASCII chars (I guess Telnet kicks into
+    # binary mode in that case, leaving us to wait for a null string terminator)
+    # JS strings are in Unicode, and the JS escaping mechanism for Unicode with
+    # escape() is, apparently, non-standard. I played around with various
+    # combinations of decodeURLComponent() / encodeURIComponent() and escape() /
+    # unescape() ... applying escape() on the JS side of the bridge, and
+    # using the following suggestion for a Python unquote function worked,
+    # so I stuck with it:
+    #   http://stackoverflow.com/questions/300445/how-to-unquote-a-urlencoded-unicode-string-in-python
+
+    def apply(self):
+        cite_cluster = self.startnode.details['cite_cluster']
+        
+        next_pending = docutils.nodes.pending(CitationSecondTransform)
+        next_pending.details['cite_cluster'] = cite_cluster
+        self.document.note_pending(next_pending)
+	self.startnode.replace_self(next_pending)
+
+class CitationSecondTransform(docutils.transforms.Transform):
+    """Second pass transform for a citation. We use two passes because
+    we want to generate all the citations in a batch, and we need to
+    get the note indexes first."""
+    #
+    # After Footnote (to pick up the note number)
+    #
+    default_priority = 650
+    def apply(self):
+        cite_cluster = self.startnode.details['cite_cluster']
+        footnote_node = self.startnode.parent.parent
+        if type(footnote_node) == docutils.nodes.footnote:
+            cite_cluster.note_index = int(str(footnote_node.children[0].children[0]))
+        cite_cluster = self.startnode.details['cite_cluster']
+        newnode = xciterst.citeproc.get_citation(cite_cluster)
+        self.startnode.replace_self(newnode)
+
 docutils.parsers.rst.directives.register_directive('bibliography', BibliographyDirective)

@@ -2,7 +2,7 @@
   Module
 """
 # -*- coding: utf-8 -*-
-import docutils, docutils.parsers.rst, docutils.transforms, docutils.utils
+import docutils, docutils.parsers.rst
 import ConfigParser
 import jsbridge
 import json
@@ -17,7 +17,7 @@ import xciterst
 
 from zot4rst.util import unquote
 import xciterst.directives
-from xciterst.parser import CiteParser
+import xciterst.roles
 from xciterst.util import html2rst
 
 DEFAULT_CITATION_FORMAT = "http://www.zotero.org/styles/chicago-author-date"
@@ -155,107 +155,4 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
             self.state_machine.document.note_pending(pending)
             return [pending]
 
-class ZoteroCitationTransform(docutils.transforms.Transform):
-    #
-    # Before Footnote
-    #
-    default_priority = 538
-    # Bridge hangs if output contains above-ASCII chars (I guess Telnet kicks into
-    # binary mode in that case, leaving us to wait for a null string terminator)
-    # JS strings are in Unicode, and the JS escaping mechanism for Unicode with
-    # escape() is, apparently, non-standard. I played around with various
-    # combinations of decodeURLComponent() / encodeURIComponent() and escape() /
-    # unescape() ... applying escape() on the JS side of the bridge, and
-    # using the following suggestion for a Python unquote function worked,
-    # so I stuck with it:
-    #   http://stackoverflow.com/questions/300445/how-to-unquote-a-urlencoded-unicode-string-in-python
-
-    def apply(self):
-        cite_cluster = self.startnode.details['cite_cluster']
-        
-        next_pending = docutils.nodes.pending(ZoteroCitationSecondTransform)
-        next_pending.details['cite_cluster'] = cite_cluster
-        self.document.note_pending(next_pending)
-	self.startnode.replace_self(next_pending)
-
-class ZoteroCitationSecondTransform(docutils.transforms.Transform):
-    """Second pass transform for a Zotero citation. We use two passes
-    because we want to generate all the citations in a batch, and we
-    need to get the note indexes first."""
-    #
-    # After Footnote (to pick up the note number)
-    #
-    default_priority = 650
-    def apply(self):
-        cite_cluster = self.startnode.details['cite_cluster']
-        footnote_node = self.startnode.parent.parent
-        if type(footnote_node) == docutils.nodes.footnote:
-            cite_cluster.note_index = int(str(footnote_node.children[0].children[0]))
-        cite_cluster = self.startnode.details['cite_cluster']
-        newnode = xciterst.citeproc.get_citation(cite_cluster)
-        self.startnode.replace_self(newnode)
-
-def handle_cite_cluster(inliner, cite_cluster):
-    def random_label():
-        return "".join(random.choice(string.digits) for x in range(20))
-
-    parent = inliner.parent
-    document = inliner.document
-    for cite in cite_cluster.citations:
-        cite.citekey = xciterst.citeproc.citekeymap[cite.citekey]
-    xciterst.cluster_tracker.track(cite_cluster)
-    if xciterst.citeproc.in_text_style or \
-            (type(parent) == docutils.nodes.footnote):
-        # already in a footnote, or in-text style: just add a pending
-        pending = docutils.nodes.pending(ZoteroCitationTransform)
-        pending.details['cite_cluster'] = cite_cluster
-        document.note_pending(pending)
-        return pending
-    else:
-        # not in a footnote & this is a footnote style; insert a
-        # reference & add a footnote to the end
-
-        label = random_label()
-
-	# Set up reference
-        refnode = docutils.nodes.footnote_reference('[%s]_' % label)
-        refnode['auto'] = 1
-        refnode['refname'] = label
-        document.note_footnote_ref(refnode)
-        document.note_autofootnote_ref(refnode)
-
-	# Set up footnote
-        footnote = docutils.nodes.footnote("")
-        footnote['auto'] = 1
-        footnote['names'].append(label)
-        pending = docutils.nodes.pending(ZoteroCitationTransform)
-        pending.details['cite_cluster'] = cite_cluster
-        paragraph = docutils.nodes.paragraph()
-        paragraph.setup_child(pending)
-        paragraph += pending
-        footnote.setup_child(paragraph)
-        footnote += paragraph
-        document.note_pending(pending)
-        document.note_autofootnote(footnote)
-        
-        # Temporarily stash footnote as a child of the refnode
-        refnode.setup_child(footnote)
-        refnode += footnote
-        return refnode
-
-def zot_cite_role(role, rawtext, text, lineno, inliner,
-                  options={}, content=[]):
-    """Text role for citations."""
-    xciterst.check_citeproc()
-
-    [first_cluster, second_cluster] = CiteParser().parse(text)
-    nodeset = []
-    if first_cluster is not None:
-        nodeset.append(handle_cite_cluster(inliner, first_cluster))
-        nodeset.append(docutils.nodes.Text(" ", rawsource=" "))
-    nodeset.append(handle_cite_cluster(inliner, second_cluster))
-    return nodeset, []
-
-# setup zotero directives, roles
 docutils.parsers.rst.directives.register_directive('zotero-setup', ZoteroSetupDirective)
-docutils.parsers.rst.roles.register_canonical_role('xcite', zot_cite_role)
