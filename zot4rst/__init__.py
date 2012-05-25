@@ -81,9 +81,13 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         self.methods.updateItems(ids)
 
     def citeproc_make_bibliography(self):
-        data = self.methods.makeBibliography()
-        if data is None: return None
-        else:            return unquote(json.loads(data))
+        raw = self.methods.makeBibliography()
+        if raw is None: return None
+        else: return unquote(json.loads(raw))
+
+    def _chunks(self, l, n):
+        """Break a list into evenly sized groups."""
+        return [l[i:i+n] for i in range(0, len(l), n)]
 
     def cache_citations(self):
         if (self.citations is None):
@@ -100,14 +104,11 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
             # Implement mini-batching. This is a hack to avoid what
             # appears to be a string size limitation of some sort in
             # jsbridge or code that it calls.
-            batchlen = 15
-            offset = 0
             self.citations = []
-            while len(self.citations) < len(citations):
-                raw = self.methods.appendCitationClusterBatch(citations[offset:offset+batchlen])
-                citation_blocks_html = json.loads(raw)
-                self.citations.extend([ html2rst(unquote(block)) for block in citation_blocks_html ])
-                offset = offset + batchlen
+            for chunk in self._chunks(citations, 15):
+                raw = self.methods.appendCitationClusterBatch(chunk)
+                cooked = [ html2rst(unquote(block)) for block in json.loads(raw) ]
+                self.citations.extend(cooked)
 
     def get_citation(self, cluster):
         self.cache_citations()
