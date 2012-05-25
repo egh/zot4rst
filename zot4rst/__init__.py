@@ -92,20 +92,12 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
     def cache_citations(self):
         if (self.citations is None):
             xciterst.cluster_tracker.register_items(self)
-            citations = []
-            for cluster in xciterst.cluster_tracker.get():
-                citations.append({ 'citationItems' : cluster.citations,
-                                   'properties'    : { 'index'    : cluster.index,
-                                                       'noteIndex': cluster.note_index } })
-            for cit in citations:
-                for c in cit['citationItems']:
-                    if c.id is None:
-                        c.id = xciterst.citekeymap[c.citekey]
+            clusters = xciterst.cluster_tracker.get()
             # Implement mini-batching. This is a hack to avoid what
             # appears to be a string size limitation of some sort in
             # jsbridge or code that it calls.
             self.citations = []
-            for chunk in self._chunks(citations, 15):
+            for chunk in self._chunks(clusters, 15):
                 raw = self.methods.appendCitationClusterBatch(chunk)
                 cooked = [ html2rst(unquote(block)) for block in json.loads(raw) ]
                 self.citations.extend(cooked)
