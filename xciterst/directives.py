@@ -1,4 +1,5 @@
 import docutils
+import docutils.transforms
 import xciterst
 
 class BibliographyDirective(docutils.parsers.rst.Directive):
