@@ -52,7 +52,7 @@ class CiteprocWrapper(object):
     """Class which represents a citeproc instance."""
 
     def __init__(self):
-        pass
+        self.citations = None
 
     def generate_rest_bibliography(self):
         """Generate a bibliography of reST nodes."""
@@ -62,15 +62,30 @@ class CiteprocWrapper(object):
         else:
             return html2rst("%s%s%s"%(bibdata[0]["bibstart"], "".join(bibdata[1]), bibdata[0]["bibend"]))
 
+    def cache_citations(self):
+        if (self.citations is None):
+            xciterst.cluster_tracker.register_items(self)
+            clusters = xciterst.cluster_tracker.get()
+            self.citations = self.citeproc_append_citation_cluster_batch(clusters)
+
+    def get_citation(self, cluster):
+        self.cache_citations()
+        return self.citations[cluster.index]
+
     # override in subclass
     def citeproc_update_items(self, ids):
         """Call updateItems in citeproc."""
         pass
 
     def citeproc_make_bibliography(self):
-        """Call makeBibliography in citeproc."""
+        """Call makeBibliography in citeproc. Should return an HTML string."""
         pass
 
+    def citeproc_append_citation_cluster_batch(self, clusters):
+        """Call appendCitationCluster for a batch of citations."""
+        pass
+
+    
 # placeholder for citeproc instance
 citeproc = None
 citekeymap = None

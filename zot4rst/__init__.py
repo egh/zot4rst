@@ -7,18 +7,15 @@ import ConfigParser
 import jsbridge
 import json
 import os
-import random
 import re
 import socket
-import string
-import sys
-import zot4rst.jsonencoder
-import xciterst
 
-from zot4rst.util import unquote
+import zot4rst.jsonencoder
+from   zot4rst.util import unquote
+import xciterst
 import xciterst.directives
 import xciterst.roles
-from xciterst.util import html2rst
+from   xciterst.util import html2rst
 
 DEFAULT_CITATION_FORMAT = "http://www.zotero.org/styles/chicago-author-date"
 
@@ -68,10 +65,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         self.methods = jsbridge.JSObject(self.bridge, "Components.utils.import('resource://citeproc/citeproc.js')")
         self.methods.instantiateCiteProc(format)
         self.in_text_style = self.methods.isInTextStyle()
-
         self.local_items = {}
-        self.citations = None
-
         super(ZoteroConnection, self).__init__()
 
     def set_format(self, format):
@@ -89,22 +83,16 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         """Break a list into evenly sized groups."""
         return [l[i:i+n] for i in range(0, len(l), n)]
 
-    def cache_citations(self):
-        if (self.citations is None):
-            xciterst.cluster_tracker.register_items(self)
-            clusters = xciterst.cluster_tracker.get()
-            # Implement mini-batching. This is a hack to avoid what
-            # appears to be a string size limitation of some sort in
-            # jsbridge or code that it calls.
-            self.citations = []
-            for chunk in self._chunks(clusters, 15):
-                raw = self.methods.appendCitationClusterBatch(chunk)
-                cooked = [ html2rst(unquote(block)) for block in json.loads(raw) ]
-                self.citations.extend(cooked)
-
-    def get_citation(self, cluster):
-        self.cache_citations()
-        return self.citations[cluster.index]
+    def citeproc_append_citation_cluster_batch(self, clusters):
+        # Implement mini-batching. This is a hack to avoid what
+        # appears to be a string size limitation of some sort in
+        # jsbridge or code that it calls.
+        retval = []
+        for chunk in self._chunks(clusters, 15):
+            raw = self.methods.appendCitationClusterBatch(chunk)
+            cooked = [ html2rst(unquote(block)) for block in json.loads(raw) ]
+            retval.extend(cooked)
+        return retval
 
     def prefix_items(self, items):
         prefixed = {}
