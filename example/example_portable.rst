@@ -5,7 +5,7 @@ Shamelessly stolen from the pandoc example:
 http://johnmacfarlane.net/pandoc/demo/CITATIONS
 
 .. zotero-setup::
-   :format: chicago-author-date
+   :style: chicago-author-date
    :biblio: example.json
 
 .. default-role:: xcite

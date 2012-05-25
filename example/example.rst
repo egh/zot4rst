@@ -6,7 +6,7 @@ http://johnmacfarlane.net/pandoc/demo/CITATIONS
 
 .. zotero-setup::
    :keymap: example.keys
-   :format: chicago-author-date
+   :style: chicago-author-date
 
 .. default-role:: xcite
 

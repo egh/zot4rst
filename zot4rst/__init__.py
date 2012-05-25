@@ -17,7 +17,7 @@ import xciterst.directives
 import xciterst.roles
 from   xciterst.util import html2rst
 
-DEFAULT_CITATION_FORMAT = "http://www.zotero.org/styles/chicago-author-date"
+DEFAULT_CITATION_STYLE = "http://www.zotero.org/styles/chicago-author-date"
 
 class ZoteroCitekeyMapper(object):
     """class used for mapping citekeys to IDs."""
@@ -58,18 +58,18 @@ class ZoteroCitekeyMapper(object):
         return [ self.zotkey2id[key] for key in keys ]
 
 class ZoteroConnection(xciterst.CiteprocWrapper):
-    def __init__(self, format, **kwargs):
+    def __init__(self, style, **kwargs):
         # connect & setup
         self.back_channel, self.bridge = jsbridge.wait_and_create_network("127.0.0.1", 24242)
         self.back_channel.timeout = self.bridge.timeout = 60
         self.methods = jsbridge.JSObject(self.bridge, "Components.utils.import('resource://citeproc/citeproc.js')")
-        self.methods.instantiateCiteProc(format)
+        self.methods.instantiateCiteProc(style)
         self.in_text_style = self.methods.isInTextStyle()
         self.local_items = {}
         super(ZoteroConnection, self).__init__()
 
-    def set_format(self, format):
-        self.methods.instantiateCiteProc(format)
+    def set_style(self, style):
+        self.methods.instantiateCiteProc(style)
 
     def citeproc_update_items(self, ids):
         self.methods.updateItems(ids)
@@ -112,14 +112,14 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
         # This is necessary: connection hangs if created outside of an instantiated
         # directive class.
         if xciterst.citeproc is None:
-            xciterst.citeproc = ZoteroConnection(self.options.get('format', DEFAULT_CITATION_FORMAT))
+            xciterst.citeproc = ZoteroConnection(self.options.get('style', DEFAULT_CITATION_STYLE))
         else:
-            xciterst.citeproc.set_format(self.options.get('format', DEFAULT_CITATION_FORMAT))
+            xciterst.citeproc.set_style(self.options.get('style', DEFAULT_CITATION_STYLE))
 
     required_arguments = 0
     optional_arguments = 0
     has_content = False
-    option_spec = {'format' : docutils.parsers.rst.directives.unchanged,
+    option_spec = {'style' : docutils.parsers.rst.directives.unchanged,
                    'keymap': docutils.parsers.rst.directives.unchanged,
                    'biblio' : docutils.parsers.rst.directives.unchanged }
     def run(self):
