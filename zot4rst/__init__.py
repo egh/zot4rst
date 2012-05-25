@@ -94,13 +94,13 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
             xciterst.cluster_tracker.register_items(self)
             citations = []
             for cluster in xciterst.cluster_tracker.get():
-                index = xciterst.cluster_tracker.get_index(cluster)
                 citations.append({ 'citationItems' : cluster.citations,
-                                   'properties'    : { 'index'    : index,
+                                   'properties'    : { 'index'    : cluster.index,
                                                        'noteIndex': cluster.note_index } })
             for cit in citations:
                 for c in cit['citationItems']:
-                    c.id = xciterst.citekeymap[c.citekey]
+                    if c.id is None:
+                        c.id = xciterst.citekeymap[c.citekey]
             # Implement mini-batching. This is a hack to avoid what
             # appears to be a string size limitation of some sort in
             # jsbridge or code that it calls.
@@ -112,7 +112,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
 
     def get_citation(self, cluster):
         self.cache_citations()
-        return self.citations[xciterst.cluster_tracker.get_index(cluster)]
+        return self.citations[cluster.index]
 
     def prefix_items(self, items):
         prefixed = {}

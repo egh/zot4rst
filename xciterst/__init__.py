@@ -26,12 +26,11 @@ class ClusterTracker(object):
 
     def track(self, cluster):
         self.clusters.append(cluster)
-        
+        index = len(self.clusters) - 1
+        cluster.index = index
+
     def reset(self):
         self.clusters = []
-
-    def get_index(self, cluster):
-        return self.clusters.index(cluster)
 
     def get_unique_ids(self):
         def flatten(listoflists):
