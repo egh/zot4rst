@@ -142,12 +142,10 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
                    'keymap': docutils.parsers.rst.directives.unchanged,
                    'biblio' : docutils.parsers.rst.directives.unchanged }
     def run(self):
-        if self.options.has_key('keymap'):
-            xciterst.citekeymap = ZoteroCitekeyMapper(xciterst.citeproc, self.options['keymap'])
-        else:
-            xciterst.citekeymap = ZoteroCitekeyMapper(xciterst.citeproc, None)
+        xciterst.citekeymap = ZoteroCitekeyMapper(xciterst.citeproc, self.options.get('keymap', None))
         if self.options.has_key('biblio'):
             xciterst.citeproc.load_biblio(self.options['biblio'])
+
         if xciterst.citeproc.in_text_style:
             return []
         else:
