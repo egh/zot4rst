@@ -91,20 +91,16 @@ class FootnoteSortTransform(docutils.transforms.Transform):
             newnum = docutils.nodes.Text(str(i + 1))
             ref.replace(oldnum, newnum)
 
-        # Reset note numbers
-        xciterst.citeproc.citations = None
-        xciterst.cluster_tracker.reset()
         for i in range(0, len(self.document.autofootnotes), 1):
             footnote = self.document.autofootnotes[i]
-            content = footnote.children[1].children[0]
-            if isinstance(footnote.children[1].children[0], docutils.nodes.pending):
-            	cluster = content.details['cite_cluster']
-		xciterst.cluster_tracker.track(cluster)
-                cluster.note_index = i
+            for child in footnote.children:
+                for grandchild in child.children:
+                    if isinstance(grandchild, docutils.nodes.pending):
+                        cluster = grandchild.details['cite_cluster']
+                        cluster.note_index = i
 
         empty = docutils.nodes.generated()
         self.startnode.replace_self(empty)
-
 
 class CitationTransform(docutils.transforms.Transform):
     #
