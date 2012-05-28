@@ -20,7 +20,7 @@ from   xciterst.util import html2rst
 DEFAULT_CITATION_STYLE = "http://www.zotero.org/styles/chicago-author-date"
 
 class ZoteroCitekeyMapper(object):
-    """class used for mapping citekeys to IDs."""
+    """Class used for mapping citekeys to IDs."""
     
     def __init__(self, conn, path=None):
         self.conn = conn
@@ -34,28 +34,41 @@ class ZoteroCitekeyMapper(object):
     def __getitem__(self, citekey):
         """Get a citation id from a citekey."""
 
-        # First, get zotero key from citekey
+        # First, get zotero key from citekey using keymap file
         if self.citekey2zotkey.has_option('keymap', citekey):
             # return only the first part, the real key - rest is comment
             zotkey = re.match("^([0-9A-Z_]+)", self.citekey2zotkey.get('keymap', citekey)).group(1)
         else:
             zotkey = citekey
         
-        return self.get_item_id_batch([zotkey])[0]
+        # now return the item id
+        return self.batch_get([zotkey])[0]
 
-    def get_item_id_batch(self, keys):
-        to_lookup = []
+    def get_item_id_dynamic_batch(self, keys):
+        """A simpler method for..."""
+        if len(keys) == 0: return []
+        data = []
         for key in keys:
-            if self.conn.local_items.has_key(key):
-                self.zotkey2id[key] = "MY-%s"%(key)
-            else:
-                if not(self.zotkey2id.has_key(key)):
-                    to_lookup.append(key)
-        if len(to_lookup) > 0:
-            ids = json.loads(self.conn.methods.getItemIdBatch(to_lookup))
-            for n, new_id in enumerate(ids):
-                self.zotkey2id[to_lookup[n]] = new_id
-        return [ self.zotkey2id[key] for key in keys ]
+            m = re.match(r"^([A-Z][a-z]+)([A-Z][a-z]+)?([0-9]+)?", key)
+            data.append([m.group(1), m.group(2), m.group(3)])
+        return json.loads(self.conn.methods.getItemIdDynamicBatch(data))
+
+    def get_item_id_raw_batch(self, keys):
+        if len(keys) == 0: return []
+        return json.loads(self.conn.methods.getItemIdRawBatch(keys))
+    
+    def batch_get(self, keys):
+        local_keys =   [ k for k in keys if self.conn.local_items.has_key(k) ]
+        raw_keys =     [ k for k in keys if re.match(r"^[A-Z0-9]{8}$", k) ]
+        dynamic_keys = [ k for k in keys if (k not in local_keys) and (k not in raw_keys) ]
+        for k in local_keys:
+            self.zotkey2id[k] = "MY-%s"%(k)
+        for k, i in zip(raw_keys, self.get_item_id_raw_batch(raw_keys)):
+            self.zotkey2id[k] = i
+        for k, i in zip(dynamic_keys, self.get_item_id_dynamic_batch(dynamic_keys)):
+            self.zotkey2id[k] = i
+
+        return [ self.zotkey2id[k] for k in keys ]
 
 class ZoteroConnection(xciterst.CiteprocWrapper):
     def __init__(self, style, **kwargs):

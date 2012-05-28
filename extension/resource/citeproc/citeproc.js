@@ -49,14 +49,14 @@ function encode(what) {
 /**
  * Return an array of item IDs for an array of keys.
  */
-function getItemIdBatch (keys) {
-    return encode(keys.map(getItemId));
+function getItemIdRawBatch (keys) {
+    return encode(keys.map(getItemIdRaw));
 }
 
 /**
  * Get the item ID for a particular key.
  */
-function getItemId (keyStr) {
+function getItemIdRaw (keyStr) {
     var libraryId = null;
     var key = null;
     if (!keyStr.match(/^[0-9]+_/)) {
@@ -161,3 +161,34 @@ function registerLocalItems(items) {
 function isInTextStyle() {
     return ('in-text' === zotero.reStructuredCSL.opt.xclass);
 };
+
+function getItemIdDynamicBatch(data) {
+    return encode(data.map(getItemIdDynamic));
+}
+
+function getItemIdDynamic(data) {
+    var creator = data[0];
+    var title = data[1];
+    var date = data[2];
+
+    var s = new zotero.Search();
+    s.addCondition("creator", "contains", creator);
+    if (title != null) {
+        s.addCondition("title", "contains", title);
+    }
+    if (date != null) {
+        s.addCondition("date", "is", date);
+    }
+    var i = s.search();
+    if (!i) {
+        return -1 ;        
+    } else {
+        if (i.length == 0) {
+            return -1;
+        } else if (i.length > 1) {
+            return -2;
+        } else {
+            return i[0];
+        }
+    }
+}
