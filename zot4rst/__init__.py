@@ -76,7 +76,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
 
     def citeproc_make_bibliography(self):
         raw = self.methods.makeBibliography()
-        if raw is None: return None
+        if (raw is None) or (raw == ""): return None
         else: return unquote(json.loads(raw))
 
     def _chunks(self, l, n):
