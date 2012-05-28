@@ -5,6 +5,7 @@ import sys
 from pkg_resources import load_entry_point
 
 import zot4rst
+import xciterst.directives
 
 if __name__ == '__main__':
     sys.exit(
