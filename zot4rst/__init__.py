@@ -84,6 +84,16 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         return [l[i:i+n] for i in range(0, len(l), n)]
 
     def citeproc_append_citation_cluster_batch(self, clusters):
+        # Bridge hangs if output contains above-ASCII chars (I guess Telnet kicks into
+        # binary mode in that case, leaving us to wait for a null string terminator)
+        # JS strings are in Unicode, and the JS escaping mechanism for Unicode with
+        # escape() is, apparently, non-standard. I played around with various
+        # combinations of decodeURLComponent() / encodeURIComponent() and escape() /
+        # unescape() ... applying escape() on the JS side of the bridge, and
+        # using the following suggestion for a Python unquote function worked,
+        # so I stuck with it:
+        #   http://stackoverflow.com/questions/300445/how-to-unquote-a-urlencoded-unicode-string-in-python
+
         # Implement mini-batching. This is a hack to avoid what
         # appears to be a string size limitation of some sort in
         # jsbridge or code that it calls.

@@ -107,15 +107,6 @@ class CitationTransform(docutils.transforms.Transform):
     # Before Footnote
     #
     default_priority = 538
-    # Bridge hangs if output contains above-ASCII chars (I guess Telnet kicks into
-    # binary mode in that case, leaving us to wait for a null string terminator)
-    # JS strings are in Unicode, and the JS escaping mechanism for Unicode with
-    # escape() is, apparently, non-standard. I played around with various
-    # combinations of decodeURLComponent() / encodeURIComponent() and escape() /
-    # unescape() ... applying escape() on the JS side of the bridge, and
-    # using the following suggestion for a Python unquote function worked,
-    # so I stuck with it:
-    #   http://stackoverflow.com/questions/300445/how-to-unquote-a-urlencoded-unicode-string-in-python
 
     def apply(self):
         cite_cluster = self.startnode.details['cite_cluster']
