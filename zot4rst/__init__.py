@@ -131,6 +131,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
 
 class ZoteroSetupDirective(docutils.parsers.rst.Directive):
     def __init__(self, *args, **kwargs):
+        xciterst.cluster_tracker = xciterst.ClusterTracker()
         docutils.parsers.rst.Directive.__init__(self, *args)
         # This is necessary: connection hangs if created outside of an instantiated
         # directive class.
