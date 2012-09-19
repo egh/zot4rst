@@ -1,6 +1,6 @@
-import xciterst
+import xciterst.sphinx
 
-from zot4rst import ZoteroBibliographyDirective, ZoteroSetupDirective, zot_cite_role
+from zot4rst import ZoteroSetupDirective
 
 def setup(app):
     """Install the plugin.
@@ -9,7 +9,5 @@ def setup(app):
     """
 
     app.add_directive('zotero-setup', ZoteroSetupDirective)
-    app.add_directive('zotero-bibliography', ZoteroBibliographyDirective)
-    app.add_role("smallcaps", xciterst.smallcaps)
-    app.add_role('xcite', zot_cite_role)
+    xciterst.sphinx.setup(app)
     return
