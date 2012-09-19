@@ -3,6 +3,7 @@ import itertools
 from xciterst.util import html2rst
 import xciterst
 from xciterst.parser import CiteParser
+from docutils.parsers.rst import roles
 
 def check_citeproc():
     if not xciterst.citeproc:
@@ -92,4 +93,4 @@ citekeymap = None
 
 class smallcaps(docutils.nodes.Inline, docutils.nodes.TextElement): pass
 
-docutils.parsers.rst.roles.register_local_role("smallcaps", smallcaps)
+roles.register_local_role("smallcaps", smallcaps)
