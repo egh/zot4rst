@@ -109,6 +109,14 @@ You can try this out yourself by running::
 This should work successfully, generating citations and a bibliography
 for items that are not in your Zotero library.
 
+Sphinx
+~~~~~~
+
+To use in sphinx, simply add the ``zot4rst.sphinx`` extension to your
+``conf.py`` file::
+
+  extensions = ['zot4rst.sphinx']
+
 Details
 ~~~~~~~
 
