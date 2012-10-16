@@ -4,7 +4,7 @@
    <Description about="urn:mozilla:install-manifest">
      <em:id>zotero-for-restructured-text@mystery-lab.com</em:id>
      <em:name>Zotero for reStructured Text</em:name>
-     <em:version>1.0</em:version>
+     <em:version>1.1</em:version>
      <em:creator>Frank Bennett</em:creator>
      <em:description>Wrapper methods to interact with a running Zotero from inside a ReST processor</em:description>
      <em:unpack>true</em:unpack>
