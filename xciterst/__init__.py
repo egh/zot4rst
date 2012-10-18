@@ -4,6 +4,7 @@ from xciterst.util import html2rst
 import xciterst
 from xciterst.parser import CiteParser
 from docutils.parsers.rst import roles
+import sys
 
 def check_citeproc():
     if not xciterst.citeproc:
