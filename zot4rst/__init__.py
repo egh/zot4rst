@@ -76,13 +76,16 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         self.back_channel, self.bridge = jsbridge.wait_and_create_network("127.0.0.1", 24242)
         self.back_channel.timeout = self.bridge.timeout = 60
         self.methods = jsbridge.JSObject(self.bridge, "Components.utils.import('resource://citeproc/citeproc.js')")
-        self.methods.instantiateCiteProc(style)
-        self.in_text_style = self.methods.isInTextStyle()
         self.local_items = {}
+
+        self.reset(style)
         super(ZoteroConnection, self).__init__()
 
-    def set_style(self, style):
-        self.methods.instantiateCiteProc(style)
+    def reset(self, style=None):
+        if (style is not None): self.style = style
+        self.methods.instantiateCiteProc(self.style)
+        self.in_text_style = self.methods.isInTextStyle()
+        super(ZoteroConnection, self).reset()
 
     def citeproc_update_items(self, ids):
         self.methods.updateItems(ids)
@@ -129,16 +132,24 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         self.local_items = json.load(open(path))
         self.methods.registerLocalItems(self.prefix_items(self.local_items));
 
+def reset(style=None):
+    if style is None: style = DEFAULT_CITATION_STYLE
+    xciterst.cluster_tracker = xciterst.ClusterTracker()
+    xciterst.citekeymap = zot4rst.ZoteroCitekeyMapper(xciterst.citeproc, None)
+    if xciterst.citeproc is None:
+        xciterst.citeproc = ZoteroConnection(style)
+    else:
+        xciterst.citeproc.reset(style)
+
+def init(style=None):
+    if style is None: style = DEFAULT_CITATION_STYLE
+    xciterst.citeproc = zot4rst.ZoteroConnection(style)
+    reset(style)
+
 class ZoteroSetupDirective(docutils.parsers.rst.Directive):
     def __init__(self, *args, **kwargs):
-        xciterst.cluster_tracker = xciterst.ClusterTracker()
         docutils.parsers.rst.Directive.__init__(self, *args)
-        # This is necessary: connection hangs if created outside of an instantiated
-        # directive class.
-        if xciterst.citeproc is None:
-            xciterst.citeproc = ZoteroConnection(self.options.get('style', DEFAULT_CITATION_STYLE))
-        else:
-            xciterst.citeproc.set_style(self.options.get('style', DEFAULT_CITATION_STYLE))
+        init(self.options.get('style', None))
 
     required_arguments = 0
     optional_arguments = 0

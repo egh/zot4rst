@@ -54,7 +54,7 @@ class CiteprocWrapper(object):
     """Class which represents a citeproc instance."""
 
     def __init__(self):
-        self.citations = None
+        self.reset()
 
     def generate_rest_bibliography(self):
         """Generate a bibliography of reST nodes."""
@@ -87,6 +87,8 @@ class CiteprocWrapper(object):
         """Call appendCitationCluster for a batch of citations."""
         pass
 
+    def reset(self):
+        self.citations = None
     
 # placeholder for citeproc instance
 citeproc = None
