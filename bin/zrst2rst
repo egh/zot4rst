@@ -8,6 +8,9 @@ import docutils.core,docutils.nodes,sys,re
 from urlparse import urlparse
 
 import xciterst
+import zot4rst
+
+zot4rst.init()
 
 marks="#=-_*^>%&|"
 lowerroman=['i','ii','iii','iv','v','vi','vii','viii','ix','x','xi']
