@@ -20,7 +20,7 @@ from docutils.readers.standalone import Reader
 from docutils.writers import Writer as WriterBase
 
 import zot4rst
-
+zot4rst.init()
 description = ('Generates HTML with small-caps support from '
                'standalone reStructuredText sources.  ' + default_description)
 
