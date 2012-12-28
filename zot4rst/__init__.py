@@ -61,9 +61,9 @@ class ZoteroCitekeyMapper(object):
         return json.loads(self.conn.methods.getItemIdRawBatch(keys))
     
     def batch_get(self, keys):
-        local_keys =   [ k for k in keys if self.conn.local_items.has_key(k) ]
-        raw_keys =     [ k for k in keys if re.match(r"^[A-Z0-9]{8}$", k) ]
-        dynamic_keys = [ k for k in keys if (k not in local_keys) and (k not in raw_keys) ]
+        local_keys =   [ k for k in keys if self.conn.local_items.has_key(k) and (k not in self.zotkey2id) ]
+        raw_keys =     [ k for k in keys if re.match(r"^[A-Z0-9]{8}$", k) and (k not in self.zotkey2id) ]
+        dynamic_keys = [ k for k in keys if (k not in local_keys) and (k not in raw_keys) and (k not in self.zotkey2id) ]
         for k in local_keys:
             self.zotkey2id[k] = "MY-%s"%(k)
         for k, i in zip(raw_keys, self.get_item_id_raw_batch(raw_keys)):

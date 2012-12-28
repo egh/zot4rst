@@ -37,7 +37,8 @@ class ClusterTracker(object):
     def get_unique_ids(self):
         def flatten(listoflists):
             return itertools.chain.from_iterable(listoflists)
-        return list(set([ item.id for item in flatten([ c.citations for c in self.clusters ]) ]))
+        citekeys = list(set([ item.citekey for item in flatten([ c.citations for c in self.clusters ]) ]))
+        return xciterst.citekeymap.batch_get(citekeys)
 
     def register_items(self, citeproc):
         """Register items in tracked clusters with the citeproc
