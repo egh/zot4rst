@@ -11,8 +11,6 @@ def handle_cite_cluster(inliner, cite_cluster):
 
     parent = inliner.parent
     document = inliner.document
-    for cite in cite_cluster.citations:
-        cite.id = xciterst.citekeymap[cite.citekey]
     xciterst.cluster_tracker.track(cite_cluster)
     if xciterst.citeproc.in_text_style or \
             (type(parent) == docutils.nodes.footnote):
