@@ -42,7 +42,10 @@ class ZoteroCitekeyMapper(object):
             zotkey = citekey
         
         # now return the item id
-        return self.batch_get([zotkey])[0]
+        if zotkey in self.zotkey2id:
+            return self.zotkey2id[zotkey]
+        else:
+            return self.batch_get([zotkey])[0]
 
     def get_item_id_dynamic_batch(self, keys):
         """A simpler method for..."""
