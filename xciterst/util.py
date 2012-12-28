@@ -30,6 +30,13 @@ def html2rst (html):
         str = str.replace("&#160;", u"\u00A0")
         return str
 
+    def is_empty_paragraph(node):
+        if isinstance(node, nodes.paragraph):
+            t = node.astext()
+            return t == ' ' or t == ''
+        else:
+            return False
+
     def wrap_text(node_list):
         # in rst text must be wrapped in a paragraph, I believe
         # at least rst2pdf disappears the text if it is not - EGH
@@ -46,7 +53,7 @@ def html2rst (html):
             else:
                 retval.append(node)
                 last_was_text = False
-        return retval
+        return [ n for n in retval if not(is_empty_paragraph(n)) ]
 
     def compact(lst):
         return [ x for x in lst if (x is not None) ]
