@@ -75,19 +75,36 @@ class ZoteroCitekeyMapper(object):
 
 class ZoteroConnection(xciterst.CiteprocWrapper):
     def __init__(self, style, **kwargs):
-        # connect & setup
-        self.back_channel, self.bridge = jsbridge.wait_and_create_network("127.0.0.1", 24242)
-        self.back_channel.timeout = self.bridge.timeout = 60
-        self.methods = jsbridge.JSObject(self.bridge, "Components.utils.import('resource://citeproc/citeproc.js')")
         self.local_items = {}
-
+        self._methods = None
+        self._needs_reinstantiation = False
+        self._in_text_style = None
         self.reset(style)
         super(ZoteroConnection, self).__init__()
 
+    @property
+    def methods(self):
+        if not self._methods:
+            # connect & setup
+            back_channel, bridge = jsbridge.wait_and_create_network("127.0.0.1", 24242)
+            back_channel.timeout = bridge.timeout = 60
+            self._methods = jsbridge.JSObject(bridge, "Components.utils.import('resource://citeproc/citeproc.js')")
+            self._needs_reinstantiation = True
+        if self._needs_reinstantiation:
+            self._needs_reinstantiation = False
+            self._methods.instantiateCiteProc(self.style)
+        return self._methods
+
+    @property
+    def in_text_style(self):
+        if not self._in_text_style:
+            self._in_text_style = self.methods.isInTextStyle()
+        return self._in_text_style
+
     def reset(self, style=None):
         if (style is not None): self.style = style
-        self.methods.instantiateCiteProc(self.style)
-        self.in_text_style = self.methods.isInTextStyle()
+        self._needs_reinstantiation = True
+        self._in_text_style = None
         super(ZoteroConnection, self).reset()
 
     def citeproc_update_items(self, ids):
