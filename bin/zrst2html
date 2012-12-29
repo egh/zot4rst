@@ -1,28 +1,27 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-# $Id: rst2html.py 4564 2006-05-21 20:44:42Z wiemann $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 """
-A front end to the Docutils Publisher, producing OpenOffice documents.
+A minimal front end to the Docutils Publisher, producing HTML.
 """
 
-import sys
 try:
     import locale
     locale.setlocale(locale.LC_ALL, '')
 except:
     pass
 
-from docutils.core import publish_cmdline_to_binary, default_description
+from docutils.core import publish_cmdline, default_description
 from docutils.writers.html4css1 import Writer, HTMLTranslator
 from docutils.readers.standalone import Reader
 from docutils.writers import Writer as WriterBase
 
+description = ('Generates (X)HTML with small-caps support from '
+               'standalone reStructuredText sources.  ' + default_description)
+
 import zot4rst
 zot4rst.init()
-description = ('Generates HTML with small-caps support from '
-               'standalone reStructuredText sources.  ' + default_description)
 
 class HTMLTranslatorWithSmallCaps(HTMLTranslator):
 
@@ -38,7 +37,7 @@ class WriterWithSmallCaps(Writer):
         self.translator_class = HTMLTranslatorWithSmallCaps
 
 writer = WriterWithSmallCaps()
-reader = Reader()
-output = publish_cmdline_to_binary(reader=reader, writer=writer,
-   settings_overrides={'footnotes_at_end': 1}, description=description)
-print ""
+
+publish_cmdline(writer=writer,
+                settings_overrides={'footnotes_at_end': 1},
+                description=description)
