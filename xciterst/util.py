@@ -70,9 +70,9 @@ def html2rst (html):
             text = cleanString(unicode(html_node))
             # whitespace is significant in reST, so normalize empties to a single space
             if re.match("^\s+$", text):
-                return nodes.Text(" ", rawsource=" ")
+                return nodes.Text(" ")
             else:
-                return nodes.Text(unicode(text), rawsource=unicode(text))
+                return nodes.Text(text)
         else:
             # Nesting nodes.
             if (html_node.name == 'span'):
