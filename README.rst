@@ -19,11 +19,9 @@ Installation
 
      sudo python setup.py install
 
-4. Build the Firefox extension (from the ``extension`` directory::
+4. Download and install the Firefox extension:
 
-     sh build.sh
-
-5. Install the extension built (``zotero-for-restructured-text.xpi``)
+  https://bitbucket.org/egh/zot4rst/downloads/zotero-for-restructured-text.xpi
 
 Quickstart
 ~~~~~~~~~~
