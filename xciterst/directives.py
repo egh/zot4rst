@@ -65,7 +65,7 @@ class FootnoteSortTransform(docutils.transforms.Transform):
 
             footnote_node.parent.remove(footnote_node)
 
-            footnotes_at_end = getattr(self.document.settings, 'footnotes_at_end', 0)
+            footnotes_at_end = getattr(self.document.settings, 'footnotes_at_end', 1)
 
             if footnotes_at_end:
                 self.document += footnote_node
