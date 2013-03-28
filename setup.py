@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(name             = 'zot4rst',
-      version          = '0.2dev',
+      version          = '0.2',
       description      = 'Zotero for reStructuredText',
       author           = 'Erik Hetzner',
       author_email     = 'egh@e6h.org',
