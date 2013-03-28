@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.11: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.10: http://docutils.sourceforge.net/" />
 <title></title>
 <style type="text/css">
 
@@ -331,36 +331,36 @@ ul.auto-toc {
 <p>Shamelessly stolen from the pandoc example:
 <a class="reference external" href="http://johnmacfarlane.net/pandoc/demo/CITATIONS">http://johnmacfarlane.net/pandoc/demo/CITATIONS</a></p>
 <ul class="simple">
-<li>Reference [1]  says blah.</li>
-<li>Reference [1]  says blah.</li>
-<li>Reference [1]  with suffix says blah.</li>
-<li>Reference [1] [CSL STYLE ERROR: reference with no printed form.], [2], see also [3] says blah.</li>
+<li>Doe (2005) says blah.</li>
+<li>Doe (2005, 30) says blah.</li>
+<li>Doe (2005, 30, with suffix) says blah.</li>
+<li>Doe (2005; 2006, 30; see also Doe and Roe 2007) says blah.</li>
 <li>In a note.<a class="footnote-reference" href="#id4" id="id1">[1]</a></li>
-<li>A citation group see [1], also [3].</li>
-<li>Another one see [1].</li>
+<li>A citation group (see Doe 2005, 34–35; also Doe and Roe 2007, chap. 3).</li>
+<li>Another one (see Doe 2005, 34–35).</li>
 <li>And another one in a note.<a class="footnote-reference" href="#id5" id="id2">[2]</a></li>
-<li>Citation with a suffix and locator [1] and nowhere else.</li>
-<li>Citation with suffix only [1] and nowhere else.</li>
+<li>Citation with a suffix and locator (Doe 2005, 33, 35–37 and nowhere else).</li>
+<li>Citation with suffix only (Doe 2005 and nowhere else).</li>
 <li>Now some modifiers.<a class="footnote-reference" href="#id6" id="id3">[3]</a></li>
-<li>With some markup <em>see</em> [1] p. <strong>32</strong>.</li>
+<li>With some markup (<em>see</em> Doe 2005 p. <strong>32</strong>).</li>
 </ul>
 <table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>A citation without locators [3].</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>A citation without locators (Doe and Roe 2007).</td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Some citations [1], see [2], [3].</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Some citations (see Doe 2006, chap. 3; Doe and Roe 2007; Doe 2005).</td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id6" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>Like a citation without author: [1], and now Doe
-with a locator [2].</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>Like a citation without author: (2005), and now Doe
+with a locator (2006, 44).</td></tr>
 </tbody>
 </table>
 </div>
@@ -368,23 +368,11 @@ with a locator [2].</td></tr>
 <h1>References</h1>
 <div class="csl-bib-body container">
 <div class="csl-entry container">
-<div class="csl-left-margin container">
-[1]</div>
-<div class="csl-right-inline container">
-J. Doe, <em>First Book</em>. Cambridge: Cambridge University Press, 2005.</div>
-</div>
+Doe, John. 2005. <em>First Book</em>. Cambridge: Cambridge University Press.</div>
 <div class="csl-entry container">
-<div class="csl-left-margin container">
-[2]</div>
-<div class="csl-right-inline container">
-J. Doe, “Article,” <em>Journal of Generic Studies</em>, vol. 6, pp. 33–34, 2006.</div>
-</div>
+———. 2006. “Article.” <em>Journal of Generic Studies</em> 6: 33–34.</div>
 <div class="csl-entry container">
-<div class="csl-left-margin container">
-[3]</div>
-<div class="csl-right-inline container">
-J. Doe and J. Roe, “Why Water Is Wet,” in <em>Third Book</em>, S. Smith, Ed. Oxford: Oxford University Press, 2007.</div>
-</div>
+Doe, John, and Jenny Roe. 2007. “Why Water Is Wet.” In <em>Third Book</em>, edited by Sam Smith. Oxford: Oxford University Press.</div>
 </div>
 </div>
 </div>
