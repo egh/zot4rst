@@ -1,5 +1,5 @@
 from zot4rst.jsonencoder import ZoteroJSONEncoder
-from xciterst import CitationCluster, CitationInfo
+from xciterst.citations import CitationCluster, CitationInfo
 import unittest2
 
 class TestJsonencoder(unittest2.TestCase):

@@ -17,6 +17,7 @@ class CitationInfo(object):
         if self.suffix:
             self.suffix = re.sub(r'\s+,', ',', self.suffix)
         self.author_only = kwargs.get('author_only', False)
+        self.id = kwargs.get('id', None)
 
     def __str__(self):
         return "%s %s(%s) %s"%(self.prefix, self.citekey, self.locator, self.suffix)
@@ -29,10 +30,6 @@ class CitationInfo(object):
                 (self.prefix == other.prefix) and
                 (self.suffix == other.suffix) and
                 (self.author_only == other.author_only))
-
-    @property
-    def id(self):
-        return xciterst.citekeymap[self.citekey]
 
 class CitationCluster(object):
     """Class to hold a cluster of citations, with information about

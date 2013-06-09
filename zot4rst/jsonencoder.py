@@ -1,7 +1,7 @@
-import jsbridge
+import json
 from xciterst.citations import CitationInfo, CitationCluster
 
-class ZoteroJSONEncoder(jsbridge.network.JSObjectEncoder):
+class ZoteroJSONEncoder(json.JSONEncoder):
     """An encoder for our JSON objects."""
     def default(self, obj):
         if isinstance(obj, CitationInfo):
@@ -17,6 +17,5 @@ class ZoteroJSONEncoder(jsbridge.network.JSObjectEncoder):
             return { 'citationItems': obj.citations,
                      'properties'   : { 'index'     : obj.index,
                                         'noteIndex' : obj.note_index } }
-        else: return json.JSONEncoder.default(self, obj)
+        else: return super(ZoteroJSONEncoder, self).default(self, obj)
 
-jsbridge.network.encoder = ZoteroJSONEncoder()
