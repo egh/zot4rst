@@ -20,7 +20,21 @@ class CitationInfo(object):
         self.id = kwargs.get('id', None)
 
     def __str__(self):
-        return "%s %s(%s) %s"%(self.prefix, self.citekey, self.locator, self.suffix)
+        if self.suppress_author: suppress_str =  "-"
+        else: suppress_str = ""
+
+        return "%s %s%s(%s) %s"%(self.prefix, suppress_str, self.citekey, self.locator, self.suffix)
+
+    def __repr__(self):
+        return "CitationInfo(%s)"%(repr({
+            "citekey" : self.citekey,
+            "label" : self.label,
+            "locator" : self.locator,
+            "suppress_author" : self.suppress_author,
+            "prefix" : self.prefix,
+            "suffix" : self.suffix,
+            "author_only" : self.author_only,
+            "id" : self.id}))
 
     def __eq__(self, other):
         return (isinstance(other, CitationInfo) and
@@ -47,3 +61,5 @@ class CitationCluster(object):
                 (self.note_index == other.note_index) and
                 (self.index == other.index))
 
+    def __repr__(self):
+        return "CitationCluster(%s)"%(repr(self.citations))
