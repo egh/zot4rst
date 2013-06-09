@@ -23,7 +23,8 @@ class CitationInfo(object):
         return "%s %s(%s) %s"%(self.prefix, self.citekey, self.locator, self.suffix)
 
     def __eq__(self, other):
-        return ((self.citekey == other.citekey) and
+        return (isinstance(other, CitationInfo) and
+                (self.citekey == other.citekey) and
                 (self.label == other.label) and
                 (self.locator == other.locator) and
                 (self.suppress_author == other.suppress_author) and
@@ -41,7 +42,8 @@ class CitationCluster(object):
         self.index = 0
 
     def __eq__(self, other):
-        return ((self.citations == other.citations) and
+        return (isinstance(other, CitationCluster) and
+                (self.citations == other.citations) and
                 (self.note_index == other.note_index) and
                 (self.index == other.index))
 
