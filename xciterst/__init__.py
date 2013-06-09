@@ -21,7 +21,6 @@ class ClusterTracker(object):
 
     def __init__(self):
         self.clusters = []
-        self.registered_items = set([])
 
     def get(self):
         return self.clusters
@@ -33,20 +32,6 @@ class ClusterTracker(object):
 
     def reset(self):
         self.clusters = []
-
-    def get_unique_ids(self):
-        def flatten(listoflists):
-            return itertools.chain.from_iterable(listoflists)
-        citekeys = list(set([ item.citekey for item in flatten([ c.citations for c in self.clusters ]) ]))
-        return xciterst.citekeymap.batch_get(citekeys)
-
-    def register_items(self, citeproc):
-        """Register items in tracked clusters with the citeproc
-        instance."""
-        uniq_ids = self.get_unique_ids()
-        if (uniq_ids != self.registered_items):
-            citeproc.citeproc_update_items(list(uniq_ids))
-            self.registered_items = uniq_ids
 
 # tracker for clusters
 cluster_tracker = ClusterTracker()
@@ -67,7 +52,6 @@ class CiteprocWrapper(object):
 
     def cache_citations(self):
         if (self.citations is None):
-            xciterst.cluster_tracker.register_items(self)
             clusters = xciterst.cluster_tracker.get()
             self.citations = self.citeproc_append_citation_cluster_batch(clusters)
 
