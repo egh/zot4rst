@@ -1,5 +1,5 @@
 from xciterst.parser import CiteParser
-from xciterst import CitationInfo
+from xciterst.citations import CitationInfo
 
 import unittest2
 
