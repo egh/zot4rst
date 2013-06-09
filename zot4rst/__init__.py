@@ -4,14 +4,13 @@
 # -*- coding: utf-8 -*-
 import docutils, docutils.parsers.rst
 import ConfigParser
-import jsbridge
 import json
 import os
 import re
 import socket
+import urllib2
 
 import zot4rst.jsonencoder
-from   zot4rst.util import unquote
 import xciterst
 import xciterst.directives
 import xciterst.roles
@@ -76,24 +75,8 @@ class ZoteroCitekeyMapper(object):
 class ZoteroConnection(xciterst.CiteprocWrapper):
     def __init__(self, style, **kwargs):
         self.local_items = {}
-        self._methods = None
-        self._needs_reinstantiation = False
-        self._in_text_style = None
-        self.reset(style)
+        self._in_text_style = True # XXXX should get from zotxt
         super(ZoteroConnection, self).__init__()
-
-    @property
-    def methods(self):
-        if not self._methods:
-            # connect & setup
-            back_channel, bridge = jsbridge.wait_and_create_network("127.0.0.1", 24242)
-            back_channel.timeout = bridge.timeout = 60
-            self._methods = jsbridge.JSObject(bridge, "Components.utils.import('resource://citeproc/citeproc.js')")
-            self._needs_reinstantiation = True
-        if self._needs_reinstantiation:
-            self._needs_reinstantiation = False
-            self._methods.instantiateCiteProc(self.style)
-        return self._methods
 
     @property
     def in_text_style(self):
@@ -101,44 +84,16 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
             self._in_text_style = self.methods.isInTextStyle()
         return self._in_text_style
 
-    def reset(self, style=None):
-        if (style is not None): self.style = style
-        self._needs_reinstantiation = True
-        self._in_text_style = None
-        super(ZoteroConnection, self).reset()
-
-    def citeproc_update_items(self, ids):
-        self.methods.updateItems(ids)
-
-    def citeproc_make_bibliography(self):
-        raw = self.methods.makeBibliography()
-        if (raw is None) or (raw == ""): return None
-        else: return unquote(json.loads(raw))
-
-    def _chunks(self, l, n):
-        """Break a list into evenly sized groups."""
-        return [l[i:i+n] for i in range(0, len(l), n)]
-
-    def citeproc_append_citation_cluster_batch(self, clusters):
-        # Bridge hangs if output contains above-ASCII chars (I guess Telnet kicks into
-        # binary mode in that case, leaving us to wait for a null string terminator)
-        # JS strings are in Unicode, and the JS escaping mechanism for Unicode with
-        # escape() is, apparently, non-standard. I played around with various
-        # combinations of decodeURLComponent() / encodeURIComponent() and escape() /
-        # unescape() ... applying escape() on the JS side of the bridge, and
-        # using the following suggestion for a Python unquote function worked,
-        # so I stuck with it:
-        #   http://stackoverflow.com/questions/300445/how-to-unquote-a-urlencoded-unicode-string-in-python
-
-        # Implement mini-batching. This is a hack to avoid what
-        # appears to be a string size limitation of some sort in
-        # jsbridge or code that it calls.
-        retval = []
-        for chunk in self._chunks(clusters, 15):
-            raw = self.methods.appendCitationClusterBatch(chunk)
-            cooked = [ html2rst(unquote(block)) for block in json.loads(raw) ]
-            retval.extend(cooked)
-        return retval
+    def citeproc_process(self, clusters):
+        request_json = { "styleId" : "chicago-author-date",
+                         "citationGroups" : clusters }
+        data = json.dumps(request_json, indent=2,cls=zot4rst.jsonencoder.ZoteroJSONEncoder)
+        print data
+        req = urllib2.Request("http://localhost:23119/zotxt/bibliography", data, {'Content-Type': 'application/json'})
+        f = urllib2.urlopen(req)
+        response = f.read()
+        f.close()
+        return json.loads(response)
 
     def prefix_items(self, items):
         prefixed = {}
@@ -158,8 +113,6 @@ def reset(style=None):
     xciterst.citekeymap = zot4rst.ZoteroCitekeyMapper(xciterst.citeproc, None)
     if xciterst.citeproc is None:
         xciterst.citeproc = ZoteroConnection(style)
-    else:
-        xciterst.citeproc.reset(style)
 
 def init(style=None):
     if style is None: style = DEFAULT_CITATION_STYLE
