@@ -5,7 +5,9 @@ class ZoteroJSONEncoder(json.JSONEncoder):
     """An encoder for our JSON objects."""
     def default(self, obj):
         if isinstance(obj, CitationInfo):
-            retval = { 'id': obj.id}
+            retval = {}
+            if obj.id: retval['id'] = obj.id
+            if obj.citekey: retval['easyKey'] = obj.citekey
             if obj.prefix: retval['prefix'] = "%s "%(obj.prefix) # ensure spaces in prefix, suffix
             if obj.suffix: retval['suffix'] = " %s"%(obj.suffix)
             if obj.label: retval['label'] = obj.label

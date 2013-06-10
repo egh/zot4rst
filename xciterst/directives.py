@@ -24,7 +24,6 @@ class BibliographyTransform(docutils.transforms.Transform):
     default_priority = 700
 
     def apply(self):
-        xciterst.cluster_tracker.register_items(xciterst.citeproc)
         self.startnode.replace_self(xciterst.citeproc.generate_rest_bibliography())
 
 class FootnoteSortTransform(docutils.transforms.Transform):

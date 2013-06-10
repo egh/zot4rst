@@ -54,7 +54,8 @@ class CiteprocWrapper(object):
     def cache_citations(self):
         if (self.citations is None):
             clusters = xciterst.cluster_tracker.get()
-            self.citations = self.citeproc_process(clusters)[0]
+            html = self.citeproc_process(clusters)[0]
+            self.citations = [ html2rst(n) for n in html ]
 
     def get_citation(self, cluster):
         self.cache_citations()

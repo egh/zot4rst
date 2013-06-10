@@ -88,12 +88,12 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         request_json = { "styleId" : "chicago-author-date",
                          "citationGroups" : clusters }
         data = json.dumps(request_json, indent=2,cls=zot4rst.jsonencoder.ZoteroJSONEncoder)
-        print data
         req = urllib2.Request("http://localhost:23119/zotxt/bibliography", data, {'Content-Type': 'application/json'})
         f = urllib2.urlopen(req)
-        response = f.read()
+        resp_json = f.read()
         f.close()
-        return json.loads(response)
+        resp = json.loads(resp_json)
+        return [resp['citationClusters'], resp['bibliography']]
 
     def prefix_items(self, items):
         prefixed = {}
