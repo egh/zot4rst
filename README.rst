@@ -19,9 +19,9 @@ Installation
 
      sudo python setup.py install
 
-4. Download and install the Firefox extension:
+4. Download and install zotxt:
 
-  https://bitbucket.org/egh/zot4rst/downloads/zotero-for-restructured-text.xpi
+  https://bitbucket.org/egh/zotxt/downloads/zotxt.xpi
 
 Quickstart
 ~~~~~~~~~~
