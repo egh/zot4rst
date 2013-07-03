@@ -5,19 +5,19 @@ class CitationInfo(object):
     """Class to hold information about a citation for passing to
     citeproc."""
 
-    def __init__(self, **kwargs):
-        self.citekey = kwargs.get('citekey')
-        self.label = kwargs.get('label', None)
-        self.locator = kwargs.get('locator', None)
-        self.suppress_author = kwargs.get('suppress_author', False)
-        self.prefix = kwargs.get('prefix', None)
+    def __init__(self, citekey, label=None, locator=None, suppress_author=False, prefix=None, suffix=None, author_only=False, theid=None):
+        self.citekey = citekey
+        self.label = label
+        self.locator = locator
+        self.suppress_author = suppress_author
+        self.prefix = prefix
         if self.prefix:
             self.prefix = re.sub(r'\s+,', ',', self.prefix)
-        self.suffix = kwargs.get('suffix', None)
+        self.suffix = suffix
         if self.suffix:
             self.suffix = re.sub(r'\s+,', ',', self.suffix)
-        self.author_only = kwargs.get('author_only', False)
-        self.id = kwargs.get('id', None)
+        self.author_only = author_only
+        self.id = theid
 
     def __str__(self):
         if self.suppress_author: suppress_str =  "-"

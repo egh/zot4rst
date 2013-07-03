@@ -6,8 +6,11 @@ class ZoteroJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, CitationInfo):
             retval = {}
-            if obj.id: retval['id'] = obj.id
-            if obj.citekey: retval['easyKey'] = obj.citekey
+            # need to make a decision here at some point
+            if obj.citekey: 
+                retval['easyKey'] = obj.citekey
+            elif obj.id:
+                retval['id'] = obj.id
             if obj.prefix: retval['prefix'] = "%s "%(obj.prefix) # ensure spaces in prefix, suffix
             if obj.suffix: retval['suffix'] = " %s"%(obj.suffix)
             if obj.label: retval['label'] = obj.label
