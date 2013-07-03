@@ -6,11 +6,10 @@ from xciterst.parser import CiteParser
 from xciterst.directives import CitationTransform
 
 def handle_cite_cluster(inliner, cite_cluster):
-    parent = inliner.parent
     document = inliner.document
     xciterst.cluster_tracker.track(cite_cluster)
     if xciterst.citeproc.in_text_style or \
-            (type(parent) == docutils.nodes.footnote):
+            (type(inliner.parent) == docutils.nodes.footnote):
         # already in a footnote, or in-text style: just add a pending
         pending = docutils.nodes.pending(CitationTransform)
         pending.details['cite_cluster'] = cite_cluster
