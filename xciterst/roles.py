@@ -6,9 +6,6 @@ from xciterst.parser import CiteParser
 from xciterst.directives import CitationTransform
 
 def handle_cite_cluster(inliner, cite_cluster):
-    def random_label():
-        return "".join(random.choice(string.digits) for x in range(20))
-
     parent = inliner.parent
     document = inliner.document
     xciterst.cluster_tracker.track(cite_cluster)
@@ -23,7 +20,7 @@ def handle_cite_cluster(inliner, cite_cluster):
         # not in a footnote & this is a footnote style; insert a
         # reference & add a footnote to the end
 
-        label = random_label()
+        label = "".join(random.choice(string.digits) for x in range(20))
 
 	# Set up reference
         refnode = docutils.nodes.footnote_reference('[%s]_' % label)
