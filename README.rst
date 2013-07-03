@@ -36,8 +36,8 @@ entries in the zotero database. The key should be of the form
   John Doe, “Article,” Journal of Generic Studies, 2006.
 
 You could use: @DoeArticle2006. This should be easy to use, but the
-reference needs to be unambiguous, which can be difficult if there are
-multiple items with the same author, title, and year. I am looking
+reference needs to be unambiguous, which might be a problem if there
+are multiple items with the same author, title, and year. I am looking
 into ways to handle this better.
 
 To include Zotero_ citations in a reStructuredText_ document, you must
