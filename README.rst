@@ -7,21 +7,24 @@ Background
 
 Zotero_ is a useful tool for managing citations.
 
-``zot4rst`` is an extension to the Python docutils_ package for
-including citations in reStructuredText_ documents.
+zot4rst is an extension to the Python docutils_ package for including
+citations in reStructuredText_ documents.
+
+zot4rst is developed under Linux, has been tested on Windows, and
+should run under Mac OS.
 
 Installation
 ~~~~~~~~~~~~
 
 1. Install Zotero_.
-2. Install docutils from a `docutils snapshot`_ release.
+2. Download and install zotxt:
+
+   https://bitbucket.org/egh/zotxt/downloads/zotxt.xpi
+
 3. Install zot4rst::
 
      sudo python setup.py install
 
-4. Download and install zotxt:
-
-  https://bitbucket.org/egh/zotxt/downloads/zotxt.xpi
 
 Quickstart
 ~~~~~~~~~~
@@ -104,6 +107,5 @@ explicitly. For example::
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
 .. _docutils: http://docutils.sourceforge.net/
 .. _`docutils snapshot`: http://docutils.sourceforge.net/docutils-snapshot.tgz
-
 .. _`sphinx bibtex`: http://sphinxcontrib-bibtex.readthedocs.org/
 .. _pelican: https://github.com/getpelican/pelican/
