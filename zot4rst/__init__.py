@@ -1,18 +1,11 @@
-"""
-  Module
-"""
 # -*- coding: utf-8 -*-
 import docutils, docutils.parsers.rst
 import json
-import os
-import re
-import socket
 import urllib2
 
 import zot4rst.jsonencoder
 import xciterst
 import xciterst.directives
-import xciterst.roles
 from   xciterst.util import html2rst
 
 DEFAULT_CITATION_STYLE = "http://www.zotero.org/styles/chicago-author-date"
