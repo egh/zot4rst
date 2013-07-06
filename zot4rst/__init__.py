@@ -107,17 +107,11 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         self.local_items = json.load(open(path))
         self.methods.registerLocalItems(self.prefix_items(self.local_items));
 
-def reset(style=None):
+def init(style=None):
     if style is None: style = DEFAULT_CITATION_STYLE
     xciterst.cluster_tracker = xciterst.ClusterTracker()
     xciterst.citekeymap = zot4rst.ZoteroCitekeyMapper(xciterst.citeproc, None)
-    if xciterst.citeproc is None:
-        xciterst.citeproc = ZoteroConnection(style)
-
-def init(style=None):
-    if style is None: style = DEFAULT_CITATION_STYLE
-    xciterst.citeproc = zot4rst.ZoteroConnection(style)
-    reset(style)
+    xciterst.citeproc = ZoteroConnection(style)
 
 class ZoteroSetupDirective(docutils.parsers.rst.Directive):
     def __init__(self, *args, **kwargs):

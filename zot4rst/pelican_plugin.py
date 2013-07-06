@@ -10,4 +10,4 @@ def setup_zotero(generator):
     zot4rst.init(generator.settings.get('CITATION_STYLE', zot4rst.DEFAULT_CITATION_STYLE))
 
 def article_setup_zotero(generator):
-    zot4rst.reset()
+    zot4rst.init(generator.settings.get('CITATION_STYLE', zot4rst.DEFAULT_CITATION_STYLE))
