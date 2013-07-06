@@ -30,9 +30,6 @@ class ClusterTracker(object):
         index = len(self.clusters) - 1
         cluster.index = index
 
-    def reset(self):
-        self.clusters = []
-
 # tracker for clusters
 cluster_tracker = ClusterTracker()
 
