@@ -8,7 +8,8 @@ Background
 Zotero_ is a useful tool for managing citations.
 
 zot4rst is an extension to the Python docutils_ package for including
-citations in reStructuredText_ documents.
+citations in reStructuredText_ documents. zot4rst uses a simple
+citation format, identical to that of pandoc.
 
 zot4rst is developed under Linux, has been tested on Windows, and
 should run under Mac OS.
