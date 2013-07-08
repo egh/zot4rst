@@ -17,14 +17,18 @@ Installation
 ~~~~~~~~~~~~
 
 1. Install Zotero_.
+
 2. Download and install zotxt:
 
    https://bitbucket.org/egh/zotxt/downloads/zotxt.xpi
 
 3. Install zot4rst::
 
-     sudo python setup.py install
+     pip install zot4rst
 
+   or you can install from source::
+
+     sudo python setup.py install
 
 Quickstart
 ~~~~~~~~~~
