@@ -82,7 +82,7 @@ class CiteParser(object):
 
     def parse(self, what):
         WORD_CHAR_RE = r'[\w.,\'\"\(\)</>-]'
-        
+        CITEKEY_RE = r'\w[\w\(:.#\$%&+?<>~/\)-]+'
         greedyToken = Regex(r'%s+'%(WORD_CHAR_RE))
         wordWithDigits = Regex(r'%s*[0-9]%s*'%(WORD_CHAR_RE, WORD_CHAR_RE))
 
@@ -104,7 +104,7 @@ class CiteParser(object):
             return CiteParser.Locator(re.sub('^,\s+', '', raw))
         locator.setParseAction(locator_parse_action)
 
-        citeKey = Optional('-') + '@' + Regex(r'[\w-]+')
+        citeKey = Optional('-') + '@' + Regex(CITEKEY_RE)
         citeKey.setParseAction(lambda s,l,t: CiteParser.CiteKey(t))
 
         # suffix comes after a cite
@@ -116,7 +116,7 @@ class CiteParser(object):
         prefix.setParseAction(lambda s,l,t: CiteParser.Prefix(" ".join(t)))
 
         # a short cite, author + (date)
-        shortCite = Optional('-') + '@' + Regex(r'[\w-]+')
+        shortCite = Optional('-') + '@' + Regex(CITEKEY_RE)
         shortCite.setParseAction(lambda s,l,t: CiteParser.ShortCite(t))
 
         # a full & complete cite (for use in brackets)
