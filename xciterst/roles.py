@@ -1,4 +1,7 @@
 import docutils
+import logging
+logging.basicConfig(format='%(levelname)s:%(funcName)s:%(message)s',
+                    level=logging.DEBUG)
 import random
 import string
 import xciterst
@@ -52,6 +55,7 @@ def cite_role(role, rawtext, text, lineno, inliner,
     """Text role for citations."""
     xciterst.check_citeproc()
 
+    logging.debug('parsing text = %s', text)
     [first_cluster, second_cluster] = CiteParser().parse(text)
     nodeset = []
     if first_cluster is not None:
