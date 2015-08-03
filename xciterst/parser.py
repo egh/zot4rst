@@ -1,6 +1,6 @@
 import re
 import sys
-from pyparsing import Group, OneOrMore, Optional, Regex, White, Word, ZeroOrMore
+from pyparsing import Group, OneOrMore, Optional, Regex, White, Word, ZeroOrMore, ParseException
 from xciterst.citations import CitationInfo, CitationCluster
 
 class CiteParser(object):
@@ -132,5 +132,9 @@ class CiteParser(object):
 
         topCite = bracketedCite ^ shortCite + shortCiteExtra ^ shortCite + bracketedCite ^ shortCite
 
-        raw = topCite.parseString(what, True)
-        return self._results2cites(list(raw))
+        try:
+            raw = topCite.parseString(what, True)
+            return self._results2cites(list(raw))
+        except ParseException:
+            raise Exception('The citation %s was not parseable.'%(what))
+
