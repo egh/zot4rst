@@ -18,7 +18,7 @@ DEFAULT_CITATION_STYLE = "http://www.zotero.org/styles/chicago-author-date"
 class ZoteroConnection(xciterst.CiteprocWrapper):
     def __init__(self, style, **kwargs):
         self.local_items = {}
-        self._in_text_style = True # XXXX should get from zotxt
+        self._in_text_style = True  # XXXX should get from zotxt
         super(ZoteroConnection, self).__init__()
 
     @property
@@ -51,16 +51,17 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         prefixed = {}
         for k in items.keys():
             v = items[k]
-            prefixed["MY-%s"%(k)] = v
-            v['id'] = "MY-%s"%(v['id'])
+            prefixed["MY-%s" % (k)] = v
+            v['id'] = "MY-%s" % (v['id'])
         return prefixed
 
     def load_biblio(self, path):
         self.local_items = json.load(open(path))
-        self.methods.registerLocalItems(self.prefix_items(self.local_items));
+        self.methods.registerLocalItems(self.prefix_items(self.local_items))
 
 def init(style=None):
-    if style is None: style = DEFAULT_CITATION_STYLE
+    if style is None:
+        style = DEFAULT_CITATION_STYLE
     xciterst.cluster_tracker = xciterst.ClusterTracker()
     xciterst.citeproc = ZoteroConnection(style)
 
