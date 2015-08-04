@@ -17,7 +17,7 @@ class CitationInfo(object):
         if self.suffix:
             self.suffix = re.sub(r'\s+,', ',', self.suffix)
         self.author_only = author_only
-        self.id = theid
+        self.citeid = theid
 
     def __str__(self):
         if self.suppress_author: suppress_str =  "-"
@@ -34,7 +34,7 @@ class CitationInfo(object):
             "prefix" : self.prefix,
             "suffix" : self.suffix,
             "author_only" : self.author_only,
-            "id" : self.id}))
+            "id" : self.citeid}))
 
     def __eq__(self, other):
         return (isinstance(other, CitationInfo) and

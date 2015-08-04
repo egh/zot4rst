@@ -9,8 +9,8 @@ class ZoteroJSONEncoder(json.JSONEncoder):
             # need to make a decision here at some point
             if obj.citekey:
                 retval['easyKey'] = obj.citekey
-            elif obj.id:
-                retval['id'] = obj.id
+            elif obj.citeid:
+                retval['id'] = obj.citeid
             if obj.prefix:
                 retval['prefix'] = "%s "%(obj.prefix) # ensure spaces in prefix, suffix
             if obj.suffix:
