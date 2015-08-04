@@ -22,7 +22,7 @@ class TestXciteParserp(unittest.TestCase):
         item1 = self.mk_citekey()
         [first_cluster, second_cluster] = self.parse("@%s"%(item1))
         self.assertEqual(first_cluster, 
-                         CitationCluster([CitationInfo(citekey="item1", author_only=True)]))
+                         CitationCluster([CitationInfo(citekey=item1, author_only=True)]))
         self.assertEqual(second_cluster, 
                          CitationCluster([CitationInfo(citekey=item1, suppress_author=True)]))
 
