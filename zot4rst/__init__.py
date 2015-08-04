@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
-import docutils, docutils.parsers.rst
 import json
+import logging
+logging.basicConfig(format='%(levelname)s:%(funcName)s:%(message)s')
 import urllib2
+
+import docutils
+import docutils.parsers.rst
 
 import zot4rst.jsonencoder
 import xciterst
@@ -24,13 +28,22 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         return self._in_text_style
 
     def citeproc_process(self, clusters):
-        request_json = { "styleId" : "chicago-author-date",
-                         "citationGroups" : clusters }
-        data = json.dumps(request_json, indent=2,cls=zot4rst.jsonencoder.ZoteroJSONEncoder)
-        req = urllib2.Request("http://localhost:23119/zotxt/bibliography", data, {'Content-Type': 'application/json'})
-        f = urllib2.urlopen(req)
-        resp_json = f.read()
-        f.close()
+        request_url = "http://localhost:23119/zotxt/bibliography"
+        request_json = {
+            "styleId": "chicago-author-date",
+            "citationGroups": clusters
+        }
+        data = json.dumps(request_json, indent=2,
+                          cls=zot4rst.jsonencoder.ZoteroJSONEncoder)
+        try:
+            req = urllib2.Request(request_url,
+                                  data, {'Content-Type': 'application/json'})
+            f = urllib2.urlopen(req)
+            resp_json = f.read()
+            f.close()
+        except:
+            logging.warning('cannot open URL %s', request_url)
+            raise
         resp = json.loads(resp_json)
         return [resp['citationClusters'], resp['bibliography']]
 
