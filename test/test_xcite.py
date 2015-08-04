@@ -168,5 +168,18 @@ class TestXciteParserp(unittest.TestCase):
                          CitationCluster([CitationInfo(citekey=item1,
                                                        locator="p. 30")]))
 
+    def test_parse_unicode_quotes(self):
+        UNICODE_PUNCT_FINAL=u'\u00BB\u2019\u201D\u203A\u2E03\u2E05\u2E0A\u2E0D\u2E1D\u2E21'
+        UNICODE_PUNCT_INITIAL=u'\u00AB\u2018\u201B\u201C\u201F\u2039\u2E02\u2E04\u2E09\u2E0C\u2E1C\u2E20'
+        item1 = self.mk_citekey()
+        suffix = "%sfoo%s"%(random.choice(UNICODE_PUNCT_INITIAL),
+                            random.choice(UNICODE_PUNCT_FINAL))
+
+        [first_cluster, second_cluster] = self.parse("[@%s %s]"%(item1, suffix))
+        self.assertEqual(first_cluster, None)
+        self.assertEqual(second_cluster,
+                         CitationCluster([CitationInfo(citekey=item1,
+                                                       suffix=suffix)]))
+
 if __name__ == '__main__':
     unittest.main()

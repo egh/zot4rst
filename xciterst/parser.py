@@ -81,7 +81,9 @@ class CiteParser(object):
         return cites
 
     def parse(self, what):
-        WORD_CHAR_RE = r'[\w.,\'\"\(\)</>-]'
+        UNICODE_PUNCT_FINAL=ur'\u00BB\u2019\u201D\u203A\u2E03\u2E05\u2E0A\u2E0D\u2E1D\u2E21'
+        UNICODE_PUNCT_INITIAL=ur'\u00AB\u2018\u201B\u201C\u201F\u2039\u2E02\u2E04\u2E09\u2E0C\u2E1CU+2E20'
+        WORD_CHAR_RE = r'[\w.,\'\"\(\)</>%s%s-]'%(UNICODE_PUNCT_INITIAL, UNICODE_PUNCT_FINAL)
         CITEKEY_RE = r'\w[\w\(:.#\$%&+?<>~/\)-]+'
         greedyToken = Regex(r'%s+'%(WORD_CHAR_RE))
         wordWithDigits = Regex(r'%s*[0-9]%s*'%(WORD_CHAR_RE, WORD_CHAR_RE))
