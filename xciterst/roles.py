@@ -63,5 +63,3 @@ def cite_role(role, rawtext, text, lineno, inliner,
         nodeset.append(docutils.nodes.Text(" ", rawsource=" "))
     nodeset.append(handle_cite_cluster(inliner, second_cluster))
     return nodeset, []
-
-docutils.parsers.rst.roles.register_canonical_role('xcite', cite_role)

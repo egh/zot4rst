@@ -131,5 +131,3 @@ class CitationSecondTransform(docutils.transforms.Transform):
         cite_cluster = self.startnode.details['cite_cluster']
         newnode = xciterst.citeproc.get_citation(cite_cluster)
         self.startnode.replace_self(newnode)
-
-docutils.parsers.rst.directives.register_directive('bibliography', BibliographyDirective)
