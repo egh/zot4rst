@@ -86,4 +86,3 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
             self.state_machine.document.note_pending(pending)
             return [pending]
 
-docutils.parsers.rst.directives.register_directive('zotero-setup', ZoteroSetupDirective)
