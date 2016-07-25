@@ -1,5 +1,6 @@
 from pelican import signals
 import zot4rst
+import zot4rst.register
 import xciterst
 
 def register():
