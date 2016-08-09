@@ -16,6 +16,9 @@ from   xciterst.util import html2rst
 DEFAULT_CITATION_STYLE = "http://www.zotero.org/styles/chicago-author-date"
 
 class ZoteroConnection(xciterst.CiteprocWrapper):
+
+    styleId = "chicago-author-date"
+
     def __init__(self, style, **kwargs):
         self.local_items = {}
         self._in_text_style = True  # XXXX should get from zotxt
@@ -30,7 +33,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
     def citeproc_process(self, clusters):
         request_url = "http://localhost:23119/zotxt/bibliography"
         request_json = {
-            "styleId": "chicago-author-date",
+            "styleId": self.styleId,
             "citationGroups": clusters
         }
         data = json.dumps(request_json, indent=2,
@@ -78,6 +81,9 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
     def run(self):
         if self.options.has_key('biblio'):
             xciterst.citeproc.load_biblio(self.options['biblio'])
+
+        if self.options.has_key('style'):
+            xciterst.citeproc.styleId = self.options['style']
 
         if xciterst.citeproc.in_text_style:
             return []
