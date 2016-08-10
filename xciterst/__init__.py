@@ -37,21 +37,27 @@ class CiteprocWrapper(object):
 
     def __init__(self):
         self.citations = None
+        self.bibdata = None
 
     def generate_rest_bibliography(self):
         """Generate a bibliography of reST nodes."""
-        clusters = xciterst.cluster_tracker.get()
-        bibdata = self.citeproc_process(clusters)[1]
+        self.cache_citations()
+        bibdata = self.bibdata
         if not(bibdata):
             return html2rst("")
         else:
-            return html2rst("%s%s%s"%(bibdata[0]["bibstart"], "".join(bibdata[1]), bibdata[0]["bibend"]))
+            return html2rst("".join((
+                bibdata[0]["bibstart"],
+                "".join(self.bibdata[1]),
+                bibdata[0]["bibend"])
+            ))
 
     def cache_citations(self):
         if (self.citations is None):
             clusters = xciterst.cluster_tracker.get()
-            html = self.citeproc_process(clusters)[0]
-            self.citations = [ html2rst(n) for n in html ]
+            citdata, bibdata = self.citeproc_process(clusters)
+            self.citations = [ html2rst(n) for n in citdata ]
+            self.bibdata = bibdata
 
     def get_citation(self, cluster):
         self.cache_citations()
