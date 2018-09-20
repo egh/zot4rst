@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import docutils
 import itertools
 from xciterst.util import html2rst

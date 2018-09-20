@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import re
 import sys
 from pyparsing import Group, OneOrMore, Optional, Regex, White, Word, ZeroOrMore, ParseException

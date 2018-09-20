@@ -1,6 +1,8 @@
+from __future__ import absolute_import
 import docutils
 import docutils.transforms
 import xciterst
+from six.moves import range
 
 class BibliographyDirective(docutils.parsers.rst.Directive):
     """Directive for bibliographies."""

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from zot4rst.jsonencoder import ZoteroJSONEncoder
 from xciterst.citations import CitationCluster, CitationInfo
 import unittest2

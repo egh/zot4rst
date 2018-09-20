@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from xciterst import smallcaps
 from xciterst.roles import cite_role
 from xciterst.directives import BibliographyDirective

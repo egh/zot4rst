@@ -1,5 +1,7 @@
+from __future__ import absolute_import
 import docutils
 import logging
+from six.moves import range
 logging.basicConfig(format='%(levelname)s:%(funcName)s:%(message)s',
                     level=logging.DEBUG)
 import random

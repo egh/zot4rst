@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import xciterst.sphinx
 
 from zot4rst import ZoteroSetupDirective

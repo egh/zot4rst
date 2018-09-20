@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import json
 import logging
 logging.basicConfig(format='%(levelname)s:%(funcName)s:%(message)s')
-import urllib2
+import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 
 import docutils
 import docutils.parsers.rst
@@ -39,9 +40,9 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         data = json.dumps(request_json, indent=2,
                           cls=zot4rst.jsonencoder.ZoteroJSONEncoder)
         try:
-            req = urllib2.Request(request_url,
+            req = six.moves.urllib.request.Request(request_url,
                                   data, {'Content-Type': 'application/json'})
-            f = urllib2.urlopen(req)
+            f = six.moves.urllib.request.urlopen(req)
             resp_json = f.read()
             f.close()
         except:
@@ -79,10 +80,10 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
     option_spec = {'style' : docutils.parsers.rst.directives.unchanged,
                    'biblio' : docutils.parsers.rst.directives.unchanged }
     def run(self):
-        if self.options.has_key('biblio'):
+        if 'biblio' in self.options:
             xciterst.citeproc.load_biblio(self.options['biblio'])
 
-        if self.options.has_key('style'):
+        if 'style' in self.options:
             xciterst.citeproc.styleId = self.options['style']
 
         if xciterst.citeproc.in_text_style:
