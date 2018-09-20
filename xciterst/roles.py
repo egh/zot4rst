@@ -44,7 +44,7 @@ def handle_cite_cluster(inliner, cite_cluster):
         footnote += paragraph
         document.note_pending(pending)
         document.note_autofootnote(footnote)
-        
+
         # Temporarily stash footnote as a child of the refnode
         refnode.setup_child(footnote)
         refnode += footnote

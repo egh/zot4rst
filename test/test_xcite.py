@@ -21,9 +21,9 @@ class TestXciteParserp(unittest.TestCase):
     def test_parse_1(self):
         item1 = self.mk_citekey()
         [first_cluster, second_cluster] = self.parse("@%s"%(item1))
-        self.assertEqual(first_cluster, 
+        self.assertEqual(first_cluster,
                          CitationCluster([CitationInfo(citekey=item1, author_only=True)]))
-        self.assertEqual(second_cluster, 
+        self.assertEqual(second_cluster,
                          CitationCluster([CitationInfo(citekey=item1, suppress_author=True)]))
 
     # @item1, [p. 30]
@@ -43,11 +43,11 @@ class TestXciteParserp(unittest.TestCase):
         self.assertEqual(first_cluster,
                          CitationCluster([CitationInfo(citekey=item1, author_only=True)]))
         self.assertEqual(second_cluster,
-                         CitationCluster([CitationInfo(citekey=item1, 
-                                       suppress_author=True, 
+                         CitationCluster([CitationInfo(citekey=item1,
+                                       suppress_author=True,
                                        locator="p. 30,",
                                        suffix="with suffix")]))
-                         
+
     # @item1 [-@item2 p. 30; see also @item3]
     def test_parse_4(self):
         item1 = self.mk_citekey()
@@ -98,7 +98,7 @@ class TestXciteParserp(unittest.TestCase):
                          CitationCluster([CitationInfo(citekey=item1,
                                                        locator="pp. 33, 35-37",
                                                        suffix="and nowhere else")]))
-        
+
     # [@item1 and nowhere else]
     def test_parse_8(self):
         item1 = self.mk_citekey()
@@ -117,7 +117,7 @@ class TestXciteParserp(unittest.TestCase):
     #                     CitationCluster([CitationInfo(citekey="item1",
     #                                   prefix="<i>see</i>",
     #                                   locator="p. <b>32</b>")]))
-        
+
     # [@item3]
     def test_parse_10(self):
         item3 = self.mk_citekey()
@@ -139,7 +139,7 @@ class TestXciteParserp(unittest.TestCase):
                                                        locator="chap. 3"),
                                           CitationInfo(citekey=item3),
                                           CitationInfo(citekey=item1)]))
-        
+
     # [-@item1]
     def test_parse_12(self):
         item1 = self.mk_citekey()

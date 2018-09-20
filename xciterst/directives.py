@@ -109,7 +109,7 @@ class CitationTransform(docutils.transforms.Transform):
 
     def apply(self):
         cite_cluster = self.startnode.details['cite_cluster']
-        
+
         next_pending = docutils.nodes.pending(CitationSecondTransform)
         next_pending.details['cite_cluster'] = cite_cluster
         self.document.note_pending(next_pending)

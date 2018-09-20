@@ -24,7 +24,7 @@ class TestJsonencoder(unittest2.TestCase):
         self.citation.author_only = True
         json = self.encoder.encode(self.citation)
         self.assertEqual(json, '{"easyKey": "foo", "author-only": true}')
-        
+
     def test_all(self):
         self.citation.prefix = "see"
         self.citation.suffix = "and nowhere else",

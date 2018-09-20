@@ -4,7 +4,7 @@ from zot4rst import ZoteroSetupDirective
 
 def setup(app):
     """Install the plugin.
-    
+
     :param app: Sphinx application context.
     """
 

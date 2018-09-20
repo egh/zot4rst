@@ -4,7 +4,7 @@ from xciterst.directives import BibliographyDirective
 
 def setup(app):
     """Install the plugin.
-    
+
     :param app: Sphinx application context.
     """
 

@@ -105,7 +105,7 @@ def html2rst (html):
                 children = compact([ walk(c) for c in html_node.contents ])
                 classes = re.split(" ", html_node.get('class', ""))
                 return nodes.container("", *wrap_text(children), classes=classes)
-    
+
     doc = BeautifulSoup.BeautifulSoup(html)
     ret = compact([ walk(c) for c in doc.contents ])
     return ret

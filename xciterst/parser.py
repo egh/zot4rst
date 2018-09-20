@@ -12,7 +12,7 @@ class CiteParser(object):
         def __str__(self):
             if type(self.content) == list:
                 return "%s(%s)"%(self.name, ", ".join([ str(c) for c in self.content]))
-            else: 
+            else:
                 return "%s(%s)"%(self.name, self.content)
 
     class Locator(Base):
@@ -93,7 +93,7 @@ class CiteParser(object):
         emText.setParseAction(lambda s,l,t:
                                   "<i>%s</i>"%(" ".join(t[1:-1])))
         strongText = '**' + OneOrMore(greedyToken) + '**'
-        strongText.setParseAction(lambda s,l,t: 
+        strongText.setParseAction(lambda s,l,t:
                                   "<b>%s</b>"%(" ".join(t[1:-1])))
 
         text = strongText | emText | greedyToken

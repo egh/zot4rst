@@ -67,7 +67,7 @@ class CiteprocWrapper(object):
     def citeproc_process(self, citations):
         """Return (citations, bibliograph)."""
         pass
-    
+
 # placeholder for citeproc instance
 citeproc = None
 citekeymap = None
