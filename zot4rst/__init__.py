@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import json
 import logging
 logging.basicConfig(format='%(levelname)s:%(funcName)s:%(message)s')
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
+import six
 
 import docutils
 import docutils.parsers.rst
@@ -15,6 +15,25 @@ import xciterst.roles
 from   xciterst.util import html2rst
 
 DEFAULT_CITATION_STYLE = "http://www.zotero.org/styles/chicago-author-date"
+
+# From the last unreleased version of six.py
+def ensure_binary(s, encoding='utf-8', errors='strict'):
+    """Coerce **s** to six.binary_type.
+
+    For Python 2:
+      - `unicode` -> encoded to `str`
+      - `str` -> `str`
+
+    For Python 3:
+      - `str` -> encoded to `bytes`
+      - `bytes` -> `bytes`
+    """
+    if isinstance(s, six.text_type):
+        return s.encode(encoding, errors)
+    elif isinstance(s, six.binary_type):
+        return s
+    else:
+        raise TypeError("not expecting type '%s'" % type(s))
 
 class ZoteroConnection(xciterst.CiteprocWrapper):
 
@@ -41,7 +60,8 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
                           cls=zot4rst.jsonencoder.ZoteroJSONEncoder)
         try:
             req = six.moves.urllib.request.Request(request_url,
-                                  data, {'Content-Type': 'application/json'})
+                                  ensure_binary(data),
+                                  {'Content-Type': 'application/json'})
             f = six.moves.urllib.request.urlopen(req)
             resp_json = f.read()
             f.close()

@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from bs4 import BeautifulSoup
+import bs4 as BeautifulSoup
 import re
 import xciterst
 
