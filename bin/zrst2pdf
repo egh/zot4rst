@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'rst2pdf==0.16','console_scripts','rst2pdf'
+from __future__ import absolute_import
 __requires__ = 'rst2pdf'
 import sys
 from pkg_resources import load_entry_point

@@ -110,4 +110,4 @@ def html2rst (html):
 
     doc = BeautifulSoup.BeautifulSoup(html, "html.parser")
     ret = compact([ walk(c) for c in doc.contents ])
-    return ret
+    return ret.decode()

@@ -8,6 +8,7 @@
 A front end to the Docutils Publisher, producing OpenOffice documents.
 """
 
+from __future__ import absolute_import
 import sys
 try:
     import locale
