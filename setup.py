@@ -12,14 +12,18 @@ setup(name             = 'zot4rst',
                           'xciterst'],
       install_requires = ["beautifulsoup4",
                           "docutils>=0.9",
-                          #"rst2pdf>=0.93.dev_r0",
                           "pyparsing>=1.5.7",
                           "pyzotero>=0.9.9"],
       scripts          = ['bin/zotcite',
                           'bin/zrst2html',
                           'bin/zrst2odt',
-                          #'bin/zrst2pdf',
                           'bin/zrst2pseudoxml',
                           'bin/zrst2rst',
-                          'bin/zupdatekeymap']
+                          'bin/zupdatekeymap'],
+      extras_require   = {
+                          'PDF': 'rst2pdf>=0.93.dev_r0',
+                         },
+      entry_points     = {
+          'console_scripts': [
+            'rst2pdf = zot4rst.zrst2pdf:run [PDF]']}
       )

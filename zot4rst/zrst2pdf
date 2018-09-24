@@ -8,7 +8,7 @@ from pkg_resources import load_entry_point
 import zot4rst
 import xciterst.directives
 
-if __name__ == '__main__':
+def run():
     sys.exit(
         load_entry_point('rst2pdf', 'console_scripts', 'rst2pdf')()
     )
