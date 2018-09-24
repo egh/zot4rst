@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'rst2pdf==0.16','console_scripts','rst2pdf'
 __requires__ = 'rst2pdf'
 import sys

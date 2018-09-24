@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 from pyzotero import zotero
 import ConfigParser, feedparser, json, optparse, os, re, shutil, sys, unicodedata
@@ -59,13 +59,13 @@ keymap.set('meta', 'key', apikey)
 
 # keys we already know about, do not change the ezkey
 known_keys = {}
-for k, v in keymap.items('keymap'): 
+for k, v in keymap.items('keymap'):
     # use only the key itself
     zotkey = re.match(r"^([0-9A-Z_]+)", v).group(1)
     known_keys[zotkey] = k
 
 zot = zotero.Zotero(userid, apikey)
-    
+
 collid = None
 if keymap.has_option('meta', 'collectionid'):
     collid = keymap.get('meta', 'collectionid')
@@ -86,14 +86,14 @@ while len(items) > 0:
         if known_keys.has_key(key): continue
 
         date = "XXXX"
-            
+
         if item.has_key('date'):
            date_key = 'date'
         elif item.has_key('dateEnacted'):
            date_key = 'dateEnacted'
         else:
            date_key = 'dateDecided'
-        
+
         md = re.match(r'([0-9]{4})', item[date_key])
         if md is not None: date = md.group(1)
 
@@ -133,7 +133,7 @@ if (len(args) > 1):
     backup_file(jsonfile)
 
     items = {}
-    for k, v in keymap.items('keymap'): 
+    for k, v in keymap.items('keymap'):
         # use only the key itself
         zotkey = re.match(r"^([0-9A-Z_]+)", v).group(1)
         url = "https://api.zotero.org/users/%s/items/%s?key=%s&content=csljson"%(userid, zotkey, apikey)

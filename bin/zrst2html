@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
@@ -27,7 +27,7 @@ class HTMLTranslatorWithSmallCaps(HTMLTranslator):
 
     def visit_smallcaps(self, node):
         self.body.append(self.starttag(node, 'span style="font-variant:small-caps"', ''))
-        
+
     def depart_smallcaps(self, node):
         self.body.append('</span>')
 
