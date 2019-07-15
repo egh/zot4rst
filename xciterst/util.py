@@ -105,9 +105,9 @@ def html2rst (html):
                 return nodes.reference(*["", ""] + children, **{ 'refuri' : html_node['href'] })
             elif (html_node.name == 'div'):
                 children = compact([ walk(c) for c in html_node.contents ])
-                classes = re.split(" ", html_node.get('class', ""))
+                classes = re.split(" ", str(html_node.get('class', "")))
                 return nodes.container("", *wrap_text(children), classes=classes)
 
     doc = BeautifulSoup.BeautifulSoup(html, "html.parser")
     ret = compact([ walk(c) for c in doc.contents ])
-    return ret.decode()
+    return ret
