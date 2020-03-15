@@ -1,5 +1,7 @@
+from __future__ import absolute_import
 import docutils
 import logging
+from six.moves import range
 logging.basicConfig(format='%(levelname)s:%(funcName)s:%(message)s',
                     level=logging.DEBUG)
 import random
@@ -44,7 +46,7 @@ def handle_cite_cluster(inliner, cite_cluster):
         footnote += paragraph
         document.note_pending(pending)
         document.note_autofootnote(footnote)
-        
+
         # Temporarily stash footnote as a child of the refnode
         refnode.setup_child(footnote)
         refnode += footnote

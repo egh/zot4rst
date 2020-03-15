@@ -1,7 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
+from __future__ import absolute_import
 from pyzotero import zotero
-import ConfigParser, feedparser, json, optparse, os, re, shutil, sys, unicodedata
+import six.moves.configparser, feedparser, json, optparse, os, re, shutil, sys, unicodedata
+import six
+from six.moves import input
 
 def ib64_patched(self, attrsD, contentparams):
     """Patch isBase64 to prevent Base64 encoding of JSON content"""
@@ -24,7 +27,7 @@ def backup_file(path):
 clean_re = re.compile(u'[^A-Za-z]+')
 def clean(s):
     # strip unicode accents
-    s = unicode(s)
+    s = six.text_type(s)
     s2 = ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
     return clean_re.sub('', s2)
 
@@ -40,7 +43,7 @@ if len(args) == 0:
 
 # set up existing keymap
 keymapfile = os.path.abspath(args[0])
-keymap = ConfigParser.SafeConfigParser()
+keymap = six.moves.configparser.SafeConfigParser()
 keymap.optionxform = str
 keymap.read(keymapfile)
 if not(keymap.has_section('keymap')):
@@ -59,20 +62,20 @@ keymap.set('meta', 'key', apikey)
 
 # keys we already know about, do not change the ezkey
 known_keys = {}
-for k, v in keymap.items('keymap'): 
+for k, v in keymap.items('keymap'):
     # use only the key itself
     zotkey = re.match(r"^([0-9A-Z_]+)", v).group(1)
     known_keys[zotkey] = k
 
 zot = zotero.Zotero(userid, apikey)
-    
+
 collid = None
 if keymap.has_option('meta', 'collectionid'):
     collid = keymap.get('meta', 'collectionid')
 else:
     collections = zot.collections()
     collstr = "".join([ "%d. %s\n"%(i + 1, coll['name']) for i, coll in enumerate(collections) ])
-    choice = raw_input("Which collection?\n\n%s> "%(collstr))
+    choice = input("Which collection?\n\n%s> "%(collstr))
     collid =  collections[int(choice) - 1]['key']
 keymap.set('meta', 'collectionid', collid)
 
@@ -83,23 +86,23 @@ items = zot.collection_items(collid)
 while len(items) > 0:
     for item in items:
         key = item['key']
-        if known_keys.has_key(key): continue
+        if key in known_keys: continue
 
         date = "XXXX"
-            
-        if item.has_key('date'):
+
+        if 'date' in item:
            date_key = 'date'
-        elif item.has_key('dateEnacted'):
+        elif 'dateEnacted' in item:
            date_key = 'dateEnacted'
         else:
            date_key = 'dateDecided'
-        
+
         md = re.match(r'([0-9]{4})', item[date_key])
         if md is not None: date = md.group(1)
 
-        if item.has_key('title'):
+        if 'title' in item:
             title_key = 'title'
-        elif item.has_key('nameOfAct'):
+        elif 'nameOfAct' in item:
             title_key = 'nameOfAct'
         else:
             title_key = 'caseName'
@@ -107,7 +110,7 @@ while len(items) > 0:
         title = clean(item[title_key])
 
         creator = "Unknown"
-        if item.has_key('creators') and len(item['creators']) > 0:
+        if 'creators' in item and len(item['creators']) > 0:
             creator = clean(item['creators'][0].get('lastName', 'Unknown'))
 
         ezkey = "%s%s"%(creator, date)
@@ -133,7 +136,7 @@ if (len(args) > 1):
     backup_file(jsonfile)
 
     items = {}
-    for k, v in keymap.items('keymap'): 
+    for k, v in keymap.items('keymap'):
         # use only the key itself
         zotkey = re.match(r"^([0-9A-Z_]+)", v).group(1)
         url = "https://api.zotero.org/users/%s/items/%s?key=%s&content=csljson"%(userid, zotkey, apikey)

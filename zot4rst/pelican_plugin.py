@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from pelican import signals
 import zot4rst
 import zot4rst.register

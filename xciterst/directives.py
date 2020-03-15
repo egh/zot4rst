@@ -1,6 +1,8 @@
+from __future__ import absolute_import
 import docutils
 import docutils.transforms
 import xciterst
+from six.moves import range
 
 class BibliographyDirective(docutils.parsers.rst.Directive):
     """Directive for bibliographies."""
@@ -109,11 +111,11 @@ class CitationTransform(docutils.transforms.Transform):
 
     def apply(self):
         cite_cluster = self.startnode.details['cite_cluster']
-        
+
         next_pending = docutils.nodes.pending(CitationSecondTransform)
         next_pending.details['cite_cluster'] = cite_cluster
         self.document.note_pending(next_pending)
-	self.startnode.replace_self(next_pending)
+        self.startnode.replace_self(next_pending)
 
 class CitationSecondTransform(docutils.transforms.Transform):
     """Second pass transform for a citation. We use two passes because

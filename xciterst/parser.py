@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import re
 import sys
 from pyparsing import Group, OneOrMore, Optional, Regex, White, Word, ZeroOrMore, ParseException
@@ -12,7 +13,7 @@ class CiteParser(object):
         def __str__(self):
             if type(self.content) == list:
                 return "%s(%s)"%(self.name, ", ".join([ str(c) for c in self.content]))
-            else: 
+            else:
                 return "%s(%s)"%(self.name, self.content)
 
     class Locator(Base):
@@ -81,8 +82,8 @@ class CiteParser(object):
         return cites
 
     def parse(self, what):
-        UNICODE_PUNCT_FINAL=ur'\u00BB\u2019\u201D\u203A\u2E03\u2E05\u2E0A\u2E0D\u2E1D\u2E21'
-        UNICODE_PUNCT_INITIAL=ur'\u00AB\u2018\u201B\u201C\u201F\u2039\u2E02\u2E04\u2E09\u2E0C\u2E1CU+2E20'
+        UNICODE_PUNCT_FINAL=r'\u00BB\u2019\u201D\u203A\u2E03\u2E05\u2E0A\u2E0D\u2E1D\u2E21'
+        UNICODE_PUNCT_INITIAL=r'\u00AB\u2018\u201B\u201C\u201F\u2039\u2E02\u2E04\u2E09\u2E0C\u2E1CU+2E20'
         WORD_CHAR_RE = r'[\w.,\'\"\(\)</>%s%s-]'%(UNICODE_PUNCT_INITIAL, UNICODE_PUNCT_FINAL)
         CITEKEY_RE = r'\w[\w\(:.#\$%&+?<>~/\)-]+'
         greedyToken = Regex(r'%s+'%(WORD_CHAR_RE))
@@ -93,7 +94,7 @@ class CiteParser(object):
         emText.setParseAction(lambda s,l,t:
                                   "<i>%s</i>"%(" ".join(t[1:-1])))
         strongText = '**' + OneOrMore(greedyToken) + '**'
-        strongText.setParseAction(lambda s,l,t: 
+        strongText.setParseAction(lambda s,l,t:
                                   "<b>%s</b>"%(" ".join(t[1:-1])))
 
         text = strongText | emText | greedyToken

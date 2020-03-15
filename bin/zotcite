@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import ConfigParser
+from __future__ import absolute_import
+from __future__ import print_function
+import six.moves.configparser
 import json
 import os
 
@@ -56,7 +59,7 @@ zotero_conn.methods.registerItemIds(itemids)
 
 if options.biblio:
     bibdata = unquote(json.loads(zotero_conn.methods.getBibliographyData()))
-    print "".join(bibdata[1])
+    print("".join(bibdata[1]))
 else:
     from xciterst import CitationInfo
     n = 1
@@ -69,4 +72,4 @@ else:
                                                      'properties'    : { 'index'    : n,
                                                                          'noteIndex': n }})
         n = n + 1
-        print unquote(res)
+        print(unquote(res))

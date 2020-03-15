@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import docutils
 import itertools
 from xciterst.util import html2rst
@@ -67,7 +68,7 @@ class CiteprocWrapper(object):
     def citeproc_process(self, citations):
         """Return (citations, bibliograph)."""
         pass
-    
+
 # placeholder for citeproc instance
 citeproc = None
 citekeymap = None

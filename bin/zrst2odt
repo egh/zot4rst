@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # $Id: rst2odt.py 5839 2009-01-07 19:09:28Z dkuhlman $
 # Author: Dave Kuhlman <dkuhlman@rexx.com>
@@ -8,6 +8,7 @@
 A front end to the Docutils Publisher, producing OpenOffice documents.
 """
 
+from __future__ import absolute_import
 import sys
 try:
     import locale

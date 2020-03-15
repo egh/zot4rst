@@ -1,10 +1,11 @@
+from __future__ import absolute_import
 import xciterst.sphinx
 
 from zot4rst import ZoteroSetupDirective
 
 def setup(app):
     """Install the plugin.
-    
+
     :param app: Sphinx application context.
     """
 

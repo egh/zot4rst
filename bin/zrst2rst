@@ -1,14 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # from http://tobogan.googlecode.com/svn/trunk/rst2rst.py
 # GPL
 
+from __future__ import absolute_import
+from __future__ import print_function
 import docutils.core,docutils.nodes,sys,re
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 
 import xciterst
 import zot4rst
+from six.moves import range
 
 zot4rst.init()
 
@@ -24,14 +27,14 @@ def gen_rst(node, depth, in_line_block=False):
         #                print node.__class__,"::",node.parent.__class__,"::",node.parent.parent.__class__, "::::::::", node,"\n\n"
         #        except:
         #               pass
-        
+
         # Some custom directives save theor source code
-        
+
         try:
             return node.in_rst
         except:
             pass
-                
+
         if isinstance (node, docutils.nodes.document):
                 node.rst=gather_rst(node,depth)
 
@@ -87,7 +90,7 @@ def gen_rst(node, depth, in_line_block=False):
 
         elif isinstance (node,docutils.nodes.entry):
                 node.rst=formatcellcontent(gather_rst(node,depth))
-        
+
 
         #########################
         ## Nodes
@@ -167,8 +170,8 @@ def gen_rst(node, depth, in_line_block=False):
                         t=gather_rst(node,depth)
                         node.rst="-"*len(t)+"\n"+t+"\n"+"-"*len(t)+"\n\n"
                 else:
-                        print "Unknown context for subtitle"
-                        print node
+                        print("Unknown context for subtitle")
+                        print(node)
                         sys.exit(1)
 
         elif isinstance (node, docutils.nodes.title_reference):
@@ -290,8 +293,8 @@ def gen_rst(node, depth, in_line_block=False):
                         node.rst=bullet+t[len(bullet):]+"\n"
 
                 else:
-                        print "Unknown kind of list_item"
-                        print node, node.parent
+                        print("Unknown kind of list_item")
+                        print(node, node.parent)
                         sys.exit(1)
         elif isinstance (node, docutils.nodes.transition):
                 node.rst="--------\n\n"
@@ -390,8 +393,8 @@ def gen_rst(node, depth, in_line_block=False):
                         node.rst=".. _"+node.get("refid")+":\n\n"
 
                 else:
-                        print "Don't know how to handle this target"
-                        print node
+                        print("Don't know how to handle this target")
+                        print(node)
 
         ###################
         ## Directives
@@ -491,21 +494,21 @@ def gen_rst(node, depth, in_line_block=False):
         elif isinstance (node, docutils.nodes.rubric):
                 t=".. rubric:: "+gather_rst(node,depth)
                 node.rst=addclass(node,t)+"\n\n"
-        
+
         elif isinstance (node, docutils.nodes.compound):
                 t=".. compound::\n\n"+indent_text(gather_rst(node,depth),"   ")
                 node.rst=addclass(node,t)+"\n\n"
-        
+
         elif isinstance (node, docutils.nodes.container):
                 node.rst=".. container:: "+node.get("classes")[0]+"\n\n"+indent_text(gather_rst(node,depth),"   ")+"\n\n"
-        
+
         elif isinstance (node, docutils.nodes.decoration):
                 node.rst=gather_rst(node,depth)
-        
+
         elif isinstance (node, docutils.nodes.header):
                 node.rst=""
                 decoration += ".. header:: "+indent_text(gather_rst(node,depth),"   ")+"\n\n"
-        
+
         elif isinstance (node, docutils.nodes.footer):
                 node.rst=""
                 decoration += ".. footer:: "+indent_text(gather_rst(node,depth),"   ")+"\n\n"
@@ -534,8 +537,8 @@ def gen_rst(node, depth, in_line_block=False):
                 if node.transform == docutils.transforms.parts.Contents:
                         node.rst="" # I handle it in a topic with contents class
                 else:
-                        print "Unknown type of pending node"
-                        print node
+                        print("Unknown type of pending node")
+                        print(node)
                         sys.exit(1)
 
         elif isinstance(node, xciterst.smallcaps):
@@ -579,7 +582,7 @@ def indent_text(text,indentation):
                 text=text[:-1]
         lines=text.split('\n')
         return indentation+('\n'+indentation).join(lines)
-        
+
 
 def gather_rst(node, depth, in_line_block=False):
         return ''.join([gen_rst(n,depth,in_line_block) for n in node.children])
@@ -625,7 +628,7 @@ def filltable (rows):
                         if cell.get("morecols"):
                                 for i in range(0,cell.get("morecols")):
                                         rows[y].insert(x+1,"H")
-                
+
         for y in range(0,len( rows)):
                 for x in range (0,len(rows[y])):
                         cell=rows[y][x]
@@ -746,7 +749,6 @@ def formatcellcontent (text):
 
 import sys
 import pprint
-from types import StringType
 from docutils import __version__, __version_details__, SettingsSpec
 from docutils import frontend, io, utils, readers, writers
 from docutils.frontend import OptionParser
@@ -769,5 +771,5 @@ if __name__ == "__main__":
     input=open(sys.argv[1]).read()
     import docutils.core
     doc=docutils.core.publish_doctree(input)
-    print ".. role:: smallcaps\n"
-    print (gen_rst(doc,0)+decoration).encode("utf-8")
+    print(".. role:: smallcaps\n")
+    print((gen_rst(doc,0)+decoration).encode("utf-8"))
