@@ -69,7 +69,7 @@ def html2rst (html):
             # Terminal nodes
             text = cleanString(unicode(html_node))
             # whitespace is significant in reST, so normalize empties to a single space
-            if re.match("^\s+$", text):
+            if re.match("^\\s+$", text):
                 return nodes.Text(" ")
             else:
                 return nodes.Text(text)
