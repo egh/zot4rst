@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import docutils, docutils.parsers.rst
 import json
-import urllib2
+import urllib
 
 import zot4rst.jsonencoder
 import xciterst
@@ -27,8 +27,8 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         request_json = { "styleId" : "chicago-author-date",
                          "citationGroups" : clusters }
         data = json.dumps(request_json, indent=2,cls=zot4rst.jsonencoder.ZoteroJSONEncoder)
-        req = urllib2.Request("http://localhost:23119/zotxt/bibliography", data, {'Content-Type': 'application/json'})
-        f = urllib2.urlopen(req)
+        f = urllib.request.urlopen("http://localhost:23119/zotxt/bibliography", data, {'Content-Type': 'application/json'})
+        # f = urllib.urlopen(req)
         resp_json = f.read()
         f.close()
         resp = json.loads(resp_json)

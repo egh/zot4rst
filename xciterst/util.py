@@ -1,7 +1,7 @@
-import BeautifulSoup
 import re
 import xciterst
 
+from bs4 import BeautifulSoup
 from docutils import nodes
 
 def html2rst (html):
