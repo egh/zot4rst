@@ -62,8 +62,8 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
     option_spec = {'style' : docutils.parsers.rst.directives.unchanged,
                    'biblio' : docutils.parsers.rst.directives.unchanged }
     def run(self):
-        if self.options.has_key('biblio'):
-            xciterst.citeproc.load_biblio(self.options['biblio'])
+        if "biblio" in self.options:
+            xciterst.citeproc.load_biblio(self.options["biblio"])
 
         if xciterst.citeproc.in_text_style:
             return []
