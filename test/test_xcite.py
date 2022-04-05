@@ -13,9 +13,9 @@ class TestXciteParserp(unittest.TestCase):
 
     def mk_citekey(self):
         """Make crazy cite keys to stress test parser."""
-        start_chars = string.digits + string.letters + '_'
-        chars = start_chars + ':.#$%&-+?<>~/'
-        return random.choice(start_chars) + ''.join(random.choice(chars) for _ in range(1000))
+        start_chars = string.digits + string.ascii_letters + "_"
+        chars = start_chars + ":.#$%&-+?<>~/"
+        return random.choice(start_chars) + "".join(random.choice(chars) for _ in range(1000))
 
     # @item1
     def test_parse_1(self):

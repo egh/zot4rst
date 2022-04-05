@@ -6,7 +6,6 @@ class ZoteroJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, CitationInfo):
             retval = {}
-            # need to make a decision here at some point
             if obj.citekey:
                 retval['easyKey'] = obj.citekey
             elif obj.citeid:
