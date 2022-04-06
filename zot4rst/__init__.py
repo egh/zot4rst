@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import docutils, docutils.parsers.rst
 import json
-import urllib
+import urllib.request
 
 import zot4rst.jsonencoder
 import xciterst
@@ -24,15 +24,19 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         return self._in_text_style
 
     def citeproc_process(self, clusters):
-        request_json = { "styleId" : "chicago-author-date",
-                         "citationGroups" : clusters }
-        data = json.dumps(request_json, indent=2,cls=zot4rst.jsonencoder.ZoteroJSONEncoder)
-        f = urllib.request.urlopen("http://localhost:23119/zotxt/bibliography", data, {'Content-Type': 'application/json'})
-        # f = urllib.urlopen(req)
-        resp_json = f.read()
-        f.close()
-        resp = json.loads(resp_json)
-        return [resp['citationClusters'], resp['bibliography']]
+        request_json = {"styleId": "chicago-author-date", "citationGroups": clusters}
+        data = json.dumps(
+            request_json, indent=2, cls=zot4rst.jsonencoder.ZoteroJSONEncoder
+        )
+        req = urllib.request.Request("http://localhost:23119/zotxt/bibliography", data.encode("ascii"), {'Content-Type': 'application/json'})
+        try:
+            f = urllib.request.urlopen(req)
+            resp_json = f.read()
+            f.close()
+            resp = json.loads(resp_json)
+            return [resp["citationClusters"], resp["bibliography"]]
+        except urllib.error.HTTPError as e:
+            raise urllib.error.HTTPError(e.url, e.code, e.read().decode(), e.hdrs, e.fp)
 
     def prefix_items(self, items):
         prefixed = {}
@@ -43,8 +47,11 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         return prefixed
 
     def load_biblio(self, path):
-        self.local_items = json.load(open(path))
-        self.methods.registerLocalItems(self.prefix_items(self.local_items));
+        pass
+        # TODO: solve this
+        # self.local_items = json.load(open(path))
+        # self.methods.registerLocalItems(self.prefix_items(self.local_items))
+
 
 def init(style=None):
     if style is None: style = DEFAULT_CITATION_STYLE
