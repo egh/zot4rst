@@ -7,14 +7,15 @@ import zot4rst.jsonencoder
 import xciterst
 import xciterst.directives
 import xciterst.roles
-from   xciterst.util import html2rst
+from xciterst.util import html2rst
 
 DEFAULT_CITATION_STYLE = "http://www.zotero.org/styles/chicago-author-date"
+
 
 class ZoteroConnection(xciterst.CiteprocWrapper):
     def __init__(self, style, **kwargs):
         self.local_items = {}
-        self._in_text_style = True # XXXX should get from zotxt
+        self._in_text_style = True  # XXXX should get from zotxt
         super(ZoteroConnection, self).__init__()
 
     @property
@@ -28,7 +29,11 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         data = json.dumps(
             request_json, indent=2, cls=zot4rst.jsonencoder.ZoteroJSONEncoder
         )
-        req = urllib.request.Request("http://localhost:23119/zotxt/bibliography", data.encode("ascii"), {'Content-Type': 'application/json'})
+        req = urllib.request.Request(
+            "http://localhost:23119/zotxt/bibliography",
+            data.encode("ascii"),
+            {"Content-Type": "application/json"},
+        )
         try:
             f = urllib.request.urlopen(req)
             resp_json = f.read()
@@ -42,8 +47,8 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         prefixed = {}
         for k in items.keys():
             v = items[k]
-            prefixed["MY-%s"%(k)] = v
-            v['id'] = "MY-%s"%(v['id'])
+            prefixed["MY-%s" % (k)] = v
+            v["id"] = "MY-%s" % (v["id"])
         return prefixed
 
     def load_biblio(self, path):
@@ -54,20 +59,25 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
 
 
 def init(style=None):
-    if style is None: style = DEFAULT_CITATION_STYLE
+    if style is None:
+        style = DEFAULT_CITATION_STYLE
     xciterst.cluster_tracker = xciterst.ClusterTracker()
     xciterst.citeproc = ZoteroConnection(style)
+
 
 class ZoteroSetupDirective(docutils.parsers.rst.Directive):
     def __init__(self, *args, **kwargs):
         docutils.parsers.rst.Directive.__init__(self, *args)
-        init(self.options.get('style', None))
+        init(self.options.get("style", None))
 
     required_arguments = 0
     optional_arguments = 0
     has_content = False
-    option_spec = {'style' : docutils.parsers.rst.directives.unchanged,
-                   'biblio' : docutils.parsers.rst.directives.unchanged }
+    option_spec = {
+        "style": docutils.parsers.rst.directives.unchanged,
+        "biblio": docutils.parsers.rst.directives.unchanged,
+    }
+
     def run(self):
         if "biblio" in self.options:
             xciterst.citeproc.load_biblio(self.options["biblio"])
@@ -79,4 +89,5 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
             self.state_machine.document.note_pending(pending)
             return [pending]
 
-docutils.parsers.rst.directives.register_directive('zotero-setup', ZoteroSetupDirective)
+
+docutils.parsers.rst.directives.register_directive("zotero-setup", ZoteroSetupDirective)
