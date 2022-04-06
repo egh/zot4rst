@@ -5,14 +5,16 @@ import xciterst
 from xciterst.parser import CiteParser
 from xciterst.directives import CitationTransform
 
+
 def handle_cite_cluster(inliner, cite_cluster):
     document = inliner.document
     xciterst.cluster_tracker.track(cite_cluster)
-    if xciterst.citeproc.in_text_style or \
-            (type(inliner.parent) == docutils.nodes.footnote):
+    if xciterst.citeproc.in_text_style or (
+        type(inliner.parent) == docutils.nodes.footnote
+    ):
         # already in a footnote, or in-text style: just add a pending
         pending = docutils.nodes.pending(CitationTransform)
-        pending.details['cite_cluster'] = cite_cluster
+        pending.details["cite_cluster"] = cite_cluster
         document.note_pending(pending)
         return pending
     else:
@@ -21,19 +23,19 @@ def handle_cite_cluster(inliner, cite_cluster):
 
         label = "".join(random.choice(string.digits) for x in range(20))
 
-	# Set up reference
-        refnode = docutils.nodes.footnote_reference('[%s]_' % label)
-        refnode['auto'] = 1
-        refnode['refname'] = label
+        # Set up reference
+        refnode = docutils.nodes.footnote_reference("[%s]_" % label)
+        refnode["auto"] = 1
+        refnode["refname"] = label
         document.note_footnote_ref(refnode)
         document.note_autofootnote_ref(refnode)
 
-	# Set up footnote
+        # Set up footnote
         footnote = docutils.nodes.footnote("")
-        footnote['auto'] = 1
-        footnote['names'].append(label)
+        footnote["auto"] = 1
+        footnote["names"].append(label)
         pending = docutils.nodes.pending(CitationTransform)
-        pending.details['cite_cluster'] = cite_cluster
+        pending.details["cite_cluster"] = cite_cluster
         paragraph = docutils.nodes.paragraph()
         paragraph.setup_child(pending)
         paragraph += pending
@@ -41,14 +43,14 @@ def handle_cite_cluster(inliner, cite_cluster):
         footnote += paragraph
         document.note_pending(pending)
         document.note_autofootnote(footnote)
-        
+
         # Temporarily stash footnote as a child of the refnode
         refnode.setup_child(footnote)
         refnode += footnote
         return refnode
 
-def cite_role(role, rawtext, text, lineno, inliner,
-                  options={}, content=[]):
+
+def cite_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
     """Text role for citations."""
     xciterst.check_citeproc()
 
@@ -60,4 +62,5 @@ def cite_role(role, rawtext, text, lineno, inliner,
     nodeset.append(handle_cite_cluster(inliner, second_cluster))
     return nodeset, []
 
-docutils.parsers.rst.roles.register_canonical_role('xcite', cite_role)
+
+docutils.parsers.rst.roles.register_canonical_role("xcite", cite_role)

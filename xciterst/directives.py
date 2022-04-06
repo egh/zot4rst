@@ -2,8 +2,10 @@ import docutils
 import docutils.transforms
 import xciterst
 
+
 class BibliographyDirective(docutils.parsers.rst.Directive):
     """Directive for bibliographies."""
+
     ## This could be extended to support selection of
     ## included bibliography entries. The processor has
     ## an API to support this, although it hasn't yet been
@@ -18,13 +20,16 @@ class BibliographyDirective(docutils.parsers.rst.Directive):
         self.state_machine.document.note_pending(pending)
         return [pending]
 
+
 class BibliographyTransform(docutils.transforms.Transform):
     """Transform which generates a bibliography. Wait for all items to
     be registered, then we generate a bibliography."""
+
     default_priority = 700
 
     def apply(self):
         self.startnode.replace_self(xciterst.citeproc.generate_rest_bibliography())
+
 
 class FootnoteSortTransform(docutils.transforms.Transform):
     default_priority = 641
@@ -38,11 +43,11 @@ class FootnoteSortTransform(docutils.transforms.Transform):
         footnotemap = {}
         footnotes = self.document.autofootnotes
         for i in range(0, len(self.document.autofootnotes), 1):
-            footnotemap[footnotes[i]['ids'][0]] = i
+            footnotemap[footnotes[i]["ids"][0]] = i
         newlist = []
         refs = self.document.autofootnote_refs
         for i in range(0, len(refs), 1):
-            newlist.append(footnotes[footnotemap[refs[i]['refid']]])
+            newlist.append(footnotes[footnotemap[refs[i]["refid"]]])
         self.document.autofootnotes = newlist
 
         # The lists are now congruent and in document order, but the
@@ -64,7 +69,7 @@ class FootnoteSortTransform(docutils.transforms.Transform):
 
             footnote_node.parent.remove(footnote_node)
 
-            footnotes_at_end = getattr(self.document.settings, 'footnotes_at_end', 1)
+            footnotes_at_end = getattr(self.document.settings, "footnotes_at_end", 1)
 
             if footnotes_at_end:
                 self.document += footnote_node
@@ -95,11 +100,12 @@ class FootnoteSortTransform(docutils.transforms.Transform):
             for child in footnote.children:
                 for grandchild in child.children:
                     if isinstance(grandchild, docutils.nodes.pending):
-                        cluster = grandchild.details['cite_cluster']
+                        cluster = grandchild.details["cite_cluster"]
                         cluster.note_index = i
 
         empty = docutils.nodes.generated()
         self.startnode.replace_self(empty)
+
 
 class CitationTransform(docutils.transforms.Transform):
     #
@@ -108,28 +114,34 @@ class CitationTransform(docutils.transforms.Transform):
     default_priority = 538
 
     def apply(self):
-        cite_cluster = self.startnode.details['cite_cluster']
-        
+        cite_cluster = self.startnode.details["cite_cluster"]
+
         next_pending = docutils.nodes.pending(CitationSecondTransform)
-        next_pending.details['cite_cluster'] = cite_cluster
+        next_pending.details["cite_cluster"] = cite_cluster
         self.document.note_pending(next_pending)
-	self.startnode.replace_self(next_pending)
+        self.startnode.replace_self(next_pending)
+
 
 class CitationSecondTransform(docutils.transforms.Transform):
     """Second pass transform for a citation. We use two passes because
     we want to generate all the citations in a batch, and we need to
     get the note indexes first."""
+
     #
     # After Footnote (to pick up the note number)
     #
     default_priority = 650
+
     def apply(self):
-        cite_cluster = self.startnode.details['cite_cluster']
+        cite_cluster = self.startnode.details["cite_cluster"]
         footnote_node = self.startnode.parent.parent
         if type(footnote_node) == docutils.nodes.footnote:
             cite_cluster.note_index = int(str(footnote_node.children[0].children[0]))
-        cite_cluster = self.startnode.details['cite_cluster']
+        cite_cluster = self.startnode.details["cite_cluster"]
         newnode = xciterst.citeproc.get_citation(cite_cluster)
         self.startnode.replace_self(newnode)
 
-docutils.parsers.rst.directives.register_directive('bibliography', BibliographyDirective)
+
+docutils.parsers.rst.directives.register_directive(
+    "bibliography", BibliographyDirective
+)
