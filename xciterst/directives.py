@@ -113,7 +113,7 @@ class CitationTransform(docutils.transforms.Transform):
         next_pending = docutils.nodes.pending(CitationSecondTransform)
         next_pending.details['cite_cluster'] = cite_cluster
         self.document.note_pending(next_pending)
-	self.startnode.replace_self(next_pending)
+        self.startnode.replace_self(next_pending)
 
 class CitationSecondTransform(docutils.transforms.Transform):
     """Second pass transform for a citation. We use two passes because
