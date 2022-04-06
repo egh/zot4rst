@@ -1,7 +1,7 @@
 import re
 import xciterst
 
-from bs4 import BeautifulSoup
+import bs4
 from docutils import nodes
 
 def html2rst (html):
@@ -64,12 +64,15 @@ def html2rst (html):
         """
         if html_node is None:
             return None
-        elif ((type(html_node) == BeautifulSoup.NavigableString) or (type(html_node) == str) or (type(html_node) == unicode)
-):
+        elif (
+            (type(html_node) == bs4.element.NavigableString)
+            or (type(html_node) == str)
+            # or (type(html_node) == unicode)
+        ):
             # Terminal nodes
-            text = cleanString(unicode(html_node))
+            text = cleanString(str(html_node))
             # whitespace is significant in reST, so normalize empties to a single space
-            if re.match("^\\s+$", text):
+            if re.match(r"^\s+$", text):
                 return nodes.Text(" ")
             else:
                 return nodes.Text(text)
@@ -98,14 +101,17 @@ def html2rst (html):
             elif (html_node.name == 'p'):
                 children = compact([ walk(c) for c in html_node.contents ])
                 return nodes.paragraph("", "", *children)
-            elif (html_node.name == 'a'):
-                children = compact([ walk(c) for c in html_node.contents ])
-                return apply(nodes.reference, ["", ""] + children, { 'refuri' : html_node['href'] })
-            elif (html_node.name == 'div'):
-                children = compact([ walk(c) for c in html_node.contents ])
-                classes = re.split(" ", html_node.get('class', ""))
+            elif html_node.name == "a":
+                children = compact([walk(c) for c in html_node.contents])
+                return apply(
+                    nodes.reference, ["", ""] + children, {"refuri": html_node["href"]}
+                )
+            elif html_node.name == "div":
+                children = compact([walk(c) for c in html_node.contents])
+                print(html_node.get("class", "")[0])
+                classes = re.split(" ", html_node.get("class", "")[0])
                 return nodes.container("", *wrap_text(children), classes=classes)
-    
-    doc = BeautifulSoup.BeautifulSoup(html)
-    ret = compact([ walk(c) for c in doc.contents ])
+
+    doc = bs4.BeautifulSoup(html, features="html.parser")
+    ret = compact([walk(c) for c in doc.contents])
     return ret

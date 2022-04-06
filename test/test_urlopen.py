@@ -35,14 +35,15 @@ print(json.dumps(data))
 req = urllib.request.Request("http://localhost:23119/zotxt/bibliography", json.dumps(data).encode("ascii"), {'Content-Type': 'application/json'})
 f = urllib.request.urlopen(req)
 
-def find_item(item: str):
-    req = urllib.request.Request("http://localhost:23119/zotxt/search", str({"q":item}).encode("ascii"),method="GET")
-    print(req.data, req.headers, req.full_url)
-    return urllib.request.urlopen(req)
+# def test_find_item(item: str):
+#     req = urllib.request.Request("http://localhost:23119/zotxt/search", str({"q":item}).encode("ascii"),method="GET")
+#     print(req.data, req.headers, req.full_url)
+#     return urllib.request.urlopen(req)
 
 # print(find_item("Jon Doe"))
 
 def test_get_item():
-    req = urllib.request.Request("http://localhost:23119/zotxt/items", str({"easykey":"DoeBook2005"}).encode("ascii"), method="GET")
-    urllib.request.urlopen(req)
+    #Zotero should be open and have an entry by John Doe called Book
+    req = urllib.request.Request("http://localhost:23119/zotxt/items?easykey=DoeBook2005")
+    f = urllib.request.urlopen(req)
 
