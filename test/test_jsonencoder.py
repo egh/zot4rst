@@ -3,6 +3,7 @@ from xciterst.citations import CitationCluster, CitationInfo
 import unittest
 
 class TestJsonencoder(unittest.TestCase):
+
     def setUp(self):
         self.encoder = ZoteroJSONEncoder()
         self.citation = CitationInfo(citekey="foo")
@@ -24,10 +25,10 @@ class TestJsonencoder(unittest.TestCase):
         self.citation.author_only = True
         json = self.encoder.encode(self.citation)
         self.assertEqual(json, '{"easyKey": "foo", "author-only": true}')
-        
+
     def test_all(self):
         self.citation.prefix = "see"
-        self.citation.suffix = "and nowhere else",
+        self.citation.suffix = ("and nowhere else",)
         self.citation.locator = "p. 10"
         json = self.encoder.encode(self.citation)
         self.assertEqual(json, '{"easyKey": "foo", "prefix": "see ", "suffix": " and nowhere else", "locator": "p. 10"}')
@@ -36,4 +37,7 @@ class TestJsonencoder(unittest.TestCase):
         self.citation_cluster.index = 2
         self.citation_cluster.note_index = 3
         json = self.encoder.encode(self.citation_cluster)
-        self.assertEqual(json, '{"citationItems": [{"easyKey": "foo"}, {"easyKey": "bar"}], "properties": {"index": 2, "noteIndex": 3}}')
+        self.assertEqual(
+            json,
+            '{"citationItems": [{"easyKey": "foo"}, {"easyKey": "bar"}], "properties": {"index": 2, "noteIndex": 3}}',
+        )
