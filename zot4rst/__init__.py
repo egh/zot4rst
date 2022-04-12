@@ -34,6 +34,7 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
             data.encode("ascii"),
             {"Content-Type": "application/json"},
         )
+
         try:
             f = urllib.request.urlopen(req)
             resp_json = f.read()

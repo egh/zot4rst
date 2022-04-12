@@ -1,9 +1,9 @@
 from zot4rst.jsonencoder import ZoteroJSONEncoder
 from xciterst.citations import CitationCluster, CitationInfo
-import unittest2
+import unittest
 
+class TestJsonencoder(unittest.TestCase):
 
-class TestJsonencoder(unittest2.TestCase):
     def setUp(self):
         self.encoder = ZoteroJSONEncoder()
         self.citation = CitationInfo(citekey="foo")
@@ -31,10 +31,7 @@ class TestJsonencoder(unittest2.TestCase):
         self.citation.suffix = ("and nowhere else",)
         self.citation.locator = "p. 10"
         json = self.encoder.encode(self.citation)
-        self.assertEqual(
-            json,
-            '{"easyKey": "foo", "locator": "p. 10", "prefix": "see ", "suffix": " and nowhere else"}',
-        )
+        self.assertEqual(json, '{"easyKey": "foo", "prefix": "see ", "suffix": " and nowhere else", "locator": "p. 10"}')
 
     def test_cluster(self):
         self.citation_cluster.index = 2

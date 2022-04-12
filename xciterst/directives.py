@@ -121,7 +121,6 @@ class CitationTransform(docutils.transforms.Transform):
         self.document.note_pending(next_pending)
         self.startnode.replace_self(next_pending)
 
-
 class CitationSecondTransform(docutils.transforms.Transform):
     """Second pass transform for a citation. We use two passes because
     we want to generate all the citations in a batch, and we need to
