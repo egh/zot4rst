@@ -3,12 +3,12 @@
 from __future__ import absolute_import
 __requires__ = 'rst2pdf'
 import sys
-from pkg_resources import load_entry_point
+from importlib import metadata
 
 import zot4rst
 import xciterst.directives
 
 def run():
     sys.exit(
-        load_entry_point('rst2pdf', 'console_scripts', 'rst2pdf')()
+        metadata.entry_points().select(name='rst2pdf', group='console_scripts').load()
     )
