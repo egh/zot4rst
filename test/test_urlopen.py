@@ -26,6 +26,8 @@ f = urllib.request.urlopen(req)
 
 
 def test_get_item():
-    #Zotero should be open and have an entry by John Doe called Book
-    req = urllib.request.Request("http://localhost:23119/zotxt/items?easykey=DoeBook2005")
+    # Zotero should be open and have an entry by John Doe called Book
+    req = urllib.request.Request(
+        "http://localhost:23119/zotxt/items?easykey=DoeBook2005"
+    )
     f = urllib.request.urlopen(req)
