@@ -2,22 +2,26 @@ from __future__ import absolute_import
 import docutils
 import logging
 from six.moves import range
-logging.basicConfig(format='%(levelname)s:%(funcName)s:%(message)s',
-                    level=logging.DEBUG)
+
+logging.basicConfig(
+    format="%(levelname)s:%(funcName)s:%(message)s", level=logging.DEBUG
+)
 import random
 import string
 import xciterst
 from xciterst.parser import CiteParser
 from xciterst.directives import CitationTransform
 
+
 def handle_cite_cluster(inliner, cite_cluster):
     document = inliner.document
     xciterst.cluster_tracker.track(cite_cluster)
-    if xciterst.citeproc.in_text_style or \
-            (type(inliner.parent) == docutils.nodes.footnote):
+    if xciterst.citeproc.in_text_style or (
+        type(inliner.parent) == docutils.nodes.footnote
+    ):
         # already in a footnote, or in-text style: just add a pending
         pending = docutils.nodes.pending(CitationTransform)
-        pending.details['cite_cluster'] = cite_cluster
+        pending.details["cite_cluster"] = cite_cluster
         document.note_pending(pending)
         return pending
     else:
@@ -26,19 +30,19 @@ def handle_cite_cluster(inliner, cite_cluster):
 
         label = "".join(random.choice(string.digits) for x in range(20))
 
-	# Set up reference
-        refnode = docutils.nodes.footnote_reference('[%s]_' % label)
-        refnode['auto'] = 1
-        refnode['refname'] = label
+        # Set up reference
+        refnode = docutils.nodes.footnote_reference("[%s]_" % label)
+        refnode["auto"] = 1
+        refnode["refname"] = label
         document.note_footnote_ref(refnode)
         document.note_autofootnote_ref(refnode)
 
-	# Set up footnote
+        # Set up footnote
         footnote = docutils.nodes.footnote("")
-        footnote['auto'] = 1
-        footnote['names'].append(label)
+        footnote["auto"] = 1
+        footnote["names"].append(label)
         pending = docutils.nodes.pending(CitationTransform)
-        pending.details['cite_cluster'] = cite_cluster
+        pending.details["cite_cluster"] = cite_cluster
         paragraph = docutils.nodes.paragraph()
         paragraph.setup_child(pending)
         paragraph += pending
@@ -52,12 +56,12 @@ def handle_cite_cluster(inliner, cite_cluster):
         refnode += footnote
         return refnode
 
-def cite_role(role, rawtext, text, lineno, inliner,
-                  options={}, content=[]):
+
+def cite_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
     """Text role for citations."""
     xciterst.check_citeproc()
 
-    logging.debug('parsing text = %s', text)
+    logging.debug("parsing text = %s", text)
     [first_cluster, second_cluster] = CiteParser().parse(text)
     nodeset = []
     if first_cluster is not None:

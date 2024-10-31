@@ -6,15 +6,21 @@ import xciterst
 from xciterst.parser import CiteParser
 import sys
 
+
 def check_citeproc():
     if not xciterst.citeproc:
         ## A kludge, but makes a big noise about the extension syntax for clarity.
         sys.stderr.write("#####\n")
         sys.stderr.write("##\n")
-        sys.stderr.write("##  Must setup a citeproc directive before xcite role is used.\n")
+        sys.stderr.write(
+            "##  Must setup a citeproc directive before xcite role is used.\n"
+        )
         sys.stderr.write("##\n")
         sys.stderr.write("#####\n")
-        raise docutils.utils.ExtensionOptionError("must set a citeproc directive before xcite role is used.")
+        raise docutils.utils.ExtensionOptionError(
+            "must set a citeproc directive before xcite role is used."
+        )
+
 
 class ClusterTracker(object):
     """Class used to track citation clusters."""
@@ -30,8 +36,10 @@ class ClusterTracker(object):
         index = len(self.clusters) - 1
         cluster.index = index
 
+
 # tracker for clusters
 cluster_tracker = ClusterTracker()
+
 
 class CiteprocWrapper(object):
     """Class which represents a citeproc instance."""
@@ -44,20 +52,24 @@ class CiteprocWrapper(object):
         """Generate a bibliography of reST nodes."""
         self.cache_citations()
         bibdata = self.bibdata
-        if not(bibdata):
+        if not (bibdata):
             return html2rst("")
         else:
-            return html2rst("".join((
-                bibdata[0]["bibstart"],
-                "".join(self.bibdata[1]),
-                bibdata[0]["bibend"])
-            ))
+            return html2rst(
+                "".join(
+                    (
+                        bibdata[0]["bibstart"],
+                        "".join(self.bibdata[1]),
+                        bibdata[0]["bibend"],
+                    )
+                )
+            )
 
     def cache_citations(self):
-        if (self.citations is None):
+        if self.citations is None:
             clusters = xciterst.cluster_tracker.get()
             citdata, bibdata = self.citeproc_process(clusters)
-            self.citations = [ html2rst(n) for n in citdata ]
+            self.citations = [html2rst(n) for n in citdata]
             self.bibdata = bibdata
 
     def get_citation(self, cluster):
@@ -69,8 +81,11 @@ class CiteprocWrapper(object):
         """Return (citations, bibliograph)."""
         pass
 
+
 # placeholder for citeproc instance
 citeproc = None
 citekeymap = None
 
-class smallcaps(docutils.nodes.Inline, docutils.nodes.TextElement): pass
+
+class smallcaps(docutils.nodes.Inline, docutils.nodes.TextElement):
+    pass
