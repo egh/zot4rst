@@ -8,7 +8,8 @@ A minimal front end to the Docutils Publisher, producing HTML.
 
 try:
     import locale
-    locale.setlocale(locale.LC_ALL, '')
+
+    locale.setlocale(locale.LC_ALL, "")
 except:
     pass
 
@@ -17,27 +18,35 @@ from docutils.writers.html4css1 import Writer, HTMLTranslator
 from docutils.readers.standalone import Reader
 from docutils.writers import Writer as WriterBase
 
-description = ('Generates (X)HTML with small-caps support from '
-               'standalone reStructuredText sources.  ' + default_description)
+description = (
+    "Generates (X)HTML with small-caps support from "
+    "standalone reStructuredText sources.  " + default_description
+)
 
 import zot4rst
+
 zot4rst.init()
+
 
 class HTMLTranslatorWithSmallCaps(HTMLTranslator):
 
     def visit_smallcaps(self, node):
-        self.body.append(self.starttag(node, 'span style="font-variant:small-caps"', ''))
-        
+        self.body.append(
+            self.starttag(node, 'span style="font-variant:small-caps"', "")
+        )
+
     def depart_smallcaps(self, node):
-        self.body.append('</span>')
+        self.body.append("</span>")
+
 
 class WriterWithSmallCaps(Writer):
     def __init__(self):
         WriterBase.__init__(self)
         self.translator_class = HTMLTranslatorWithSmallCaps
 
+
 writer = WriterWithSmallCaps()
 
-publish_cmdline(writer=writer,
-                settings_overrides={'footnotes_at_end': 1},
-                description=description)
+publish_cmdline(
+    writer=writer, settings_overrides={"footnotes_at_end": 1}, description=description
+)
