@@ -21,7 +21,7 @@ Installation
 
 2. Download and install zotxt:
 
-   https://bitbucket.org/egh/zotxt/downloads/zotxt.xpi
+   https://github.com/egh/zotxt/releases/
 
 3. Install zot4rst::
 
@@ -29,7 +29,7 @@ Installation
 
    or you can install from source::
 
-     sudo python setup.py install
+     sudo python3 -mpip install .
 
 Quickstart
 ~~~~~~~~~~
