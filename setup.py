@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
 from setuptools import setup
 
 setup(
@@ -10,9 +11,9 @@ setup(
     url="http://bitbucket.org/egh/zot4rst/",
     packages=["zot4rst", "xciterst"],
     install_requires=[
-        "BeautifulSoup4>=3.2.0",
-        "docutils>=0.9",
         "rst2pdf>=0.93.dev_r0",
+        "beautifulsoup4",
+        "docutils>=0.9",
         "pyparsing>=1.5.7",
         "pyzotero>=0.9.9",
     ],
@@ -25,4 +26,8 @@ setup(
         "bin/zrst2rst",
         "bin/zupdatekeymap",
     ],
+    extras_require={
+        "PDF": "rst2pdf>=0.93.dev_r0",
+    },
+    entry_points={"console_scripts": ["rst2pdf = zot4rst.zrst2pdf:run [PDF]"]},
 )

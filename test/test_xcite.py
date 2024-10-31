@@ -1,8 +1,11 @@
+from __future__ import absolute_import
 from xciterst.parser import CiteParser
 from xciterst.citations import CitationInfo, CitationCluster
 import random
 import string
 import unittest
+from six.moves import range
+
 
 
 class TestXciteParserp(unittest.TestCase):

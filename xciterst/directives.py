@@ -1,6 +1,9 @@
+from __future__ import absolute_import
 import docutils
 import docutils.transforms
 import xciterst
+from six.moves import range
+
 
 
 class BibliographyDirective(docutils.parsers.rst.Directive):
@@ -140,8 +143,3 @@ class CitationSecondTransform(docutils.transforms.Transform):
         cite_cluster = self.startnode.details["cite_cluster"]
         newnode = xciterst.citeproc.get_citation(cite_cluster)
         self.startnode.replace_self(newnode)
-
-
-docutils.parsers.rst.directives.register_directive(
-    "bibliography", BibliographyDirective
-)

@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
-import docutils, docutils.parsers.rst
+from __future__ import absolute_import
 import json
-import urllib.request
+import logging
+
+logging.basicConfig(format="%(levelname)s:%(funcName)s:%(message)s")
+import six
+
+import docutils
+import docutils.parsers.rst
 
 import zot4rst.jsonencoder
 import xciterst
@@ -12,7 +18,30 @@ from xciterst.util import html2rst
 DEFAULT_CITATION_STYLE = "http://www.zotero.org/styles/chicago-author-date"
 
 
+# From the last unreleased version of six.py
+def ensure_binary(s, encoding="utf-8", errors="strict"):
+    """Coerce **s** to six.binary_type.
+
+    For Python 2:
+      - `unicode` -> encoded to `str`
+      - `str` -> `str`
+
+    For Python 3:
+      - `str` -> encoded to `bytes`
+      - `bytes` -> `bytes`
+    """
+    if isinstance(s, six.text_type):
+        return s.encode(encoding, errors)
+    elif isinstance(s, six.binary_type):
+        return s
+    else:
+        raise TypeError("not expecting type '%s'" % type(s))
+
+
 class ZoteroConnection(xciterst.CiteprocWrapper):
+
+    styleId = "chicago-author-date"
+
     def __init__(self, style, **kwargs):
         self.local_items = {}
         self._in_text_style = True  # XXXX should get from zotxt
@@ -25,24 +54,23 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         return self._in_text_style
 
     def citeproc_process(self, clusters):
-        request_json = {"styleId": "chicago-author-date", "citationGroups": clusters}
+        request_url = "http://localhost:23119/zotxt/bibliography"
+        request_json = {"styleId": self.styleId, "citationGroups": clusters}
         data = json.dumps(
             request_json, indent=2, cls=zot4rst.jsonencoder.ZoteroJSONEncoder
         )
-        req = urllib.request.Request(
-            "http://localhost:23119/zotxt/bibliography",
-            data.encode("ascii"),
-            {"Content-Type": "application/json"},
-        )
-
         try:
-            f = urllib.request.urlopen(req)
+            req = six.moves.urllib.request.Request(
+                request_url, ensure_binary(data), {"Content-Type": "application/json"}
+            )
+            f = six.moves.urllib.request.urlopen(req)
             resp_json = f.read()
             f.close()
-            resp = json.loads(resp_json)
-            return [resp["citationClusters"], resp["bibliography"]]
-        except urllib.error.HTTPError as e:
-            raise urllib.error.HTTPError(e.url, e.code, e.read().decode(), e.hdrs, e.fp)
+        except:
+            logging.warning("cannot open URL %s", request_url)
+            raise
+        resp = json.loads(resp_json)
+        return [resp["citationClusters"], resp["bibliography"]]
 
     def prefix_items(self, items):
         prefixed = {}
@@ -53,10 +81,8 @@ class ZoteroConnection(xciterst.CiteprocWrapper):
         return prefixed
 
     def load_biblio(self, path):
-        pass
-        # TODO: solve this
-        # self.local_items = json.load(open(path))
-        # self.methods.registerLocalItems(self.prefix_items(self.local_items))
+        self.local_items = json.load(open(path))
+        self.methods.registerLocalItems(self.prefix_items(self.local_items))
 
 
 def init(style=None):
@@ -83,12 +109,12 @@ class ZoteroSetupDirective(docutils.parsers.rst.Directive):
         if "biblio" in self.options:
             xciterst.citeproc.load_biblio(self.options["biblio"])
 
+        if "style" in self.options:
+            xciterst.citeproc.styleId = self.options["style"]
+
         if xciterst.citeproc.in_text_style:
             return []
         else:
             pending = docutils.nodes.pending(xciterst.directives.FootnoteSortTransform)
             self.state_machine.document.note_pending(pending)
             return [pending]
-
-
-docutils.parsers.rst.directives.register_directive("zotero-setup", ZoteroSetupDirective)

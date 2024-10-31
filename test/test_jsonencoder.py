@@ -1,10 +1,10 @@
+from __future__ import absolute_import
 from zot4rst.jsonencoder import ZoteroJSONEncoder
 from xciterst.citations import CitationCluster, CitationInfo
 import unittest
 
 
 class TestJsonencoder(unittest.TestCase):
-
     def setUp(self):
         self.encoder = ZoteroJSONEncoder()
         self.citation = CitationInfo(citekey="foo")

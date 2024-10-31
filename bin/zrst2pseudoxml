@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # $Id: rst2pseudoxml.py 4564 2006-05-21 20:44:42Z wiemann $
 # Author: David Goodger <goodger@python.org>
@@ -7,6 +7,8 @@
 """
 A minimal front end to the Docutils Publisher, producing pseudo-XML.
 """
+
+from __future__ import absolute_import
 
 try:
     import locale

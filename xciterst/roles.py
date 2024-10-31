@@ -1,4 +1,11 @@
+from __future__ import absolute_import
 import docutils
+import logging
+from six.moves import range
+
+logging.basicConfig(
+    format="%(levelname)s:%(funcName)s:%(message)s", level=logging.DEBUG
+)
 import random
 import string
 import xciterst
@@ -54,6 +61,7 @@ def cite_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
     """Text role for citations."""
     xciterst.check_citeproc()
 
+    logging.debug("parsing text = %s", text)
     [first_cluster, second_cluster] = CiteParser().parse(text)
     nodeset = []
     if first_cluster is not None:
@@ -61,6 +69,3 @@ def cite_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
         nodeset.append(docutils.nodes.Text(" ", rawsource=" "))
     nodeset.append(handle_cite_cluster(inliner, second_cluster))
     return nodeset, []
-
-
-docutils.parsers.rst.roles.register_canonical_role("xcite", cite_role)
