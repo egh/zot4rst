@@ -122,7 +122,7 @@ class CiteParser(object):
         def locator_parse_action(s, l, t):
             raw = " ".join(t)
             # strip leading comma
-            return CiteParser.Locator(re.sub("^,\s+", "", raw))
+            return CiteParser.Locator(re.sub(r"^,\s+", "", raw))
 
         locator.setParseAction(locator_parse_action)
 
